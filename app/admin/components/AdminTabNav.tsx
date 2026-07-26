@@ -10,9 +10,10 @@ const TABS = [
   { key: "controlPanel", label: "Control Panel" },
   { key: "accounts", label: "Accounts" },
   { key: "scrapers", label: "Scrapers" },
+  { key: "rssControl", label: "RSS Control" },
 ];
 
-export default function TabNav({ activeTab, onTabChange }: TabNavProperties) {
+export default function AdminTabNav({ activeTab, onTabChange }: TabNavProperties) {
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-[#262826] border-b border-gray-200">
       <div> </div>
