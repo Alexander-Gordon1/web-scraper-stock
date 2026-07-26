@@ -17,7 +17,7 @@ export default function RSSControl() {
         <button
           onClick={
             async () => {
-            const res = await fetch('/admin/api/yahooRSS');
+            const res = await fetch('/admin/api/yahooRSS', { headers: {'Authorization': process.env.CronJob || ''}});
             }
           }
           title="Ingest RSS"
