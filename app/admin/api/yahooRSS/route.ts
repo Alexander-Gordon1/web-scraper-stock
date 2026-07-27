@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
   const expected = process.env.CronJob;
 
-  if (authHeader === expected) {
+  if (authHeader !== expected) {
     return NextResponse.json({ error: 'Unauthorized access to endpoint' }, { status: 401 });
   }
 
