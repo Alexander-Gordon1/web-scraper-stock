@@ -11,8 +11,8 @@ const tickers = [
   "NFLX", "CRM", "ADBE", "CSCO", "IBM", "QCOM", "JPM", "BAC", "GS", "V",
   "MA", "WMT", "COST", "HD", "XOM", "CVX", "JNJ", "PFE", "UNH", "LLY",
 
-  // British stocks (LSE-listed, .L suffix)
-  "SHEL.L", "AZN.L", "HSBA.L", "ULVR.L", "BP.L", "GSK.L", "DGE.L", "RIO.L", "BATS.L", "REL.L",
+  // Frequently in the news (consumer/industrial/auto)
+  "KO", "PEP", "MCD", "DIS", "BA", "GE", "CAT", "F", "GM", "UBER",
 
   // AI / semis / high-momentum names that dominate headlines
   "ABNB", "COIN", "SOFI", "RIVN", "LCID", "SMCI", "ARM", "SNOW", "CRWD", "PANW"
