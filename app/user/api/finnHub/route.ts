@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
 
   const { error: insertError } = await supabase
     .from("stocks")
-    .upsert(validRows, { onConflict: "symbol,quote_time", ignoreDuplicates: true });
+    .insert(validRows);
 
   if (insertError) {
     console.error("Supabase insert error:", insertError);
