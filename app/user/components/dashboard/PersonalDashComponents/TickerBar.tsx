@@ -1,4 +1,3 @@
-// components/dashboard/PersonalDashComponents/TickerBar.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,10 +20,17 @@ function TickerItem({ label, value, changePercent }: TickerItemProps) {
       >
         {label}
       </span>
-      <span className="text-sm font-mono text-white/70">{typeof value === "number" ? value.toFixed(2) : "—"}</span>
+      <span className="text-sm font-mono text-white/70">
+        {typeof value === "number" ? value.toFixed(2) : "—"}
+      </span>
     </div>
   );
 }
+
+const TICKERS = [
+  "NVDA", "MU", "GOOGL", "AVGO", "AAPL", "MRVL", "MSFT", "AMD", "META", "AMZN",
+  
+];
 
 export default function TickerBar() {
   const [tickerItems, setTickerItems] = useState<TickerItemProps[]>([]);
@@ -32,17 +38,20 @@ export default function TickerBar() {
   useEffect(() => {
     const fetchTickers = async () => {
       try {
-        const res = await fetch("/user/api/finnHub");
+        const res = await fetch("/user/api/getTickersFromDatabase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tickers: TICKERS }),
+        });
         if (!res.ok) return; // keep existing data on HTTP error
         const data = await res.json();
 
-        const formatted: TickerItemProps[] = data.map((quote: any) => ({
+        const formatted: TickerItemProps[] = (data.quotes ?? []).map((quote: any) => ({
           label: quote.symbol,
-          value: quote.price,
-          changePercent: quote.changePercent,
+          value: quote.current_price,
+          changePercent: quote.percent_change,
         }));
 
-        // Only update if we actually got valid quotes back
         if (formatted.length > 0) setTickerItems(formatted);
       } catch {
         // Network error — keep existing data
@@ -50,7 +59,7 @@ export default function TickerBar() {
     };
 
     fetchTickers();
-    const interval = setInterval(fetchTickers, 15000); // 10 tickers × 4/min = 40 req/min
+    const interval = setInterval(fetchTickers, 15000);
     return () => clearInterval(interval);
   }, []);
 

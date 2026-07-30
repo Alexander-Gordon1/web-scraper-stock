@@ -17,7 +17,7 @@ export default function RSSControl() {
         <button
           onClick={
             async () => {
-            const res = await fetch('/admin/api/yahooRSS', { headers: {'Authorization': process.env.CronJob || ''}});
+            const res = await fetch('/user/api/finnHub', { headers: {'Authorization': 'aoqhxbvcydrfi209437845gytfmndbdujv834egwenf9v923784rt239urbdfsdliuyfvcskduyt6tc'}});
             }
           }
           title="Ingest RSS"
