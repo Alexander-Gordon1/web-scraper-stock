@@ -30,7 +30,7 @@ function RegForgotContent() {
       body: JSON.stringify({ username: email, password }),
     });
     setLoading(false);
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.status === 409) setError("Username already exists.");
     else if (res.status === 201) router.push("/user/login");
     else setError(data.message ?? "Registration failed.");

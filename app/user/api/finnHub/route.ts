@@ -1,22 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// const tickers = ["AAPL", "GOOGL", "AMZN", "MSFT", "TSLA", "NVDA", "META", "NFLX", "INTC", "AMD"];
-const tickers = [
-  // Currently trending (highest recent chatter/pageviews)
-  "NVDA", "MU", "GOOGL", "AVGO", "AAPL", "MRVL", "MSFT", "AMD", "META", "AMZN",
-  "PLTR", "NOW", "TSLA", "RKLB", "SNDK", "INTC", "ORCL", "TSM", "PL", "IREN",
+import { TICKER_OPTIONS as tickers } from "@/app/user/lib/tickers";
 
-  // Mega-cap "big hitters" / consistently covered
-  "NFLX", "CRM", "ADBE", "CSCO", "IBM", "QCOM", "JPM", "BAC", "GS", "V",
-  "MA", "WMT", "COST", "HD", "XOM", "CVX", "JNJ", "PFE", "UNH", "LLY",
-
-  // Frequently in the news (consumer/industrial/auto)
-  "KO", "PEP", "MCD", "DIS", "BA", "GE", "CAT", "F", "GM", "UBER",
-
-  // AI / semis / high-momentum names that dominate headlines
-  "ABNB", "COIN", "SOFI", "RIVN", "LCID", "SMCI", "ARM", "SNOW", "CRWD", "PANW"
-];
 type FinnhubQuote = {
   c: number;
   d: number;

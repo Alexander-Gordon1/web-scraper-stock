@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   //query supabase
   const { data, error } = await supabase
     .from("users")
-    .select("username, password")
+    .select("id, username, password")
     .eq("username", username)
     .eq("password", password)
     .single();
@@ -27,10 +27,21 @@ export async function POST(request: NextRequest) {
     )
   }
   else {
-    return NextResponse.json(
+    const response = NextResponse.json(
       {Success: true, message: "Login Successful"},
       {status : 200}
     )
+
+    // remember who is logged in so other routes (e.g. the ticker bar) can look up their data
+    response.cookies.set("userId", data.id, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+    return response;
   }
 
   
