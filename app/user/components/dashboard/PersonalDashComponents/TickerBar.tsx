@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { MAX_TICKERS } from "@/app/user/lib/tickers";
 
 type TickerItemProps = {
@@ -13,7 +13,7 @@ function TickerItem({ label, value, changePercent }: TickerItemProps) {
   const isUp = changePercent >= 0;
 
   return (
-    <div className="flex items-center justify-between gap-6 px-4 py-2 min-w-[140px]">
+    <div className="flex shrink-0 items-center justify-between gap-6 px-4 py-2 min-w-[140px]">
       <span
         className={`text-[16px] font-semibold tracking-wide ${
           isUp ? "text-green-500" : "text-red-500"
@@ -117,10 +117,20 @@ export default function TickerBar() {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[black] flex items-center">
-      <div className="flex flex-1 items-center overflow-hidden">
-        {tickerItems.map((item) => (
-          <TickerItem key={item.label} {...item} />
+    // -mx-10 / -mt-4 cancel the dashboard's px-10 py-4 padding so the bar runs edge to edge
+    // and sits right under the nav's bottom line; border-b matches that line
+    <div ref={containerRef} className="relative -mx-10 -mt-4 bg-[black] flex items-stretch border-b border-gray-200/60">
+      {/* same width as the + button, so the tickers are centred across the whole bar */}
+      <div className="ml-2.5 w-8 shrink-0" aria-hidden="true" />
+
+      {/* justify-center-safe: centred, but falls back to left-aligned when they don't all fit */}
+      <div className="flex flex-1 items-stretch justify-center-safe overflow-hidden">
+        {tickerItems.map((item, i) => (
+          <Fragment key={item.label}>
+            {/* divider between tickers, 8px in from the top and bottom */}
+            {i > 0 && <span className="my-2 w-px shrink-0 bg-gray-200" aria-hidden="true" />}
+            <TickerItem {...item} />
+          </Fragment>
         ))}
       </div>
 
@@ -129,7 +139,7 @@ export default function TickerBar() {
         onClick={() => setOpen((o) => !o)}
         aria-label="Add tickers"
         aria-expanded={open}
-        className="mr-2.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-2xl leading-none text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+        className="mr-2.5 flex h-8 w-8 shrink-0 self-center items-center justify-center rounded-md text-2xl leading-none text-white/70 hover:bg-white/10 hover:text-white transition-colors"
       >
         +
       </button>

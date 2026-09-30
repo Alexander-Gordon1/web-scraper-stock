@@ -10,3 +10,29 @@ export const DEFAULT_TICKERS = ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META",
 
 // most tickers a user can have in their ticker bar
 export const MAX_TICKERS = 10;
+
+// names a news headline might use for each ticker (matched as whole words, case-sensitive),
+// since the rss articles aren't tagged with tickers
+export const TICKER_KEYWORDS: Record<string, string[]> = {
+  AAPL: ["AAPL", "Apple", "iPhone"],
+  AMD: ["AMD", "Advanced Micro Devices"],
+  AMZN: ["AMZN", "Amazon"],
+  AVGO: ["AVGO", "Broadcom"],
+  BA: ["Boeing", "NYSE:BA", "(BA)"],
+  COST: ["Costco", "(COST)"],
+  GOOGL: ["GOOGL", "GOOG", "Google", "Alphabet"],
+  JNJ: ["JNJ", "Johnson & Johnson", "J&J"],
+  JPM: ["JPM", "JPMorgan", "JP Morgan"],
+  KO: ["Coca-Cola", "Coca Cola", "Coke", "(KO)"],
+  LLY: ["LLY", "Eli Lilly", "Lilly"],
+  META: ["Meta", "Facebook", "Instagram", "WhatsApp"],
+  MSFT: ["MSFT", "Microsoft"],
+  NFLX: ["NFLX", "Netflix"],
+  NVDA: ["NVDA", "Nvidia", "NVIDIA"],
+  SNDK: ["SNDK", "SanDisk", "Sandisk"],
+  TSLA: ["TSLA", "Tesla", "Elon Musk", "Musk"],
+  UNH: ["UNH", "UnitedHealth"],
+  V: ["Visa", "NYSE:V", "(V)"],
+  WMT: ["WMT", "Walmart"],
+  XOM: ["XOM", "Exxon", "ExxonMobil"],
+};

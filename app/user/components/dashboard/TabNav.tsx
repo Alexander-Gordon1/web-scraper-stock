@@ -36,7 +36,7 @@ export default function TabNav({ activeTab, onTabChange }: TabNavProperties) {
   }, []);
 
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-[#262826] border-b border-gray-200">
+    <nav className="flex items-center justify-between px-6 py-3 bg-[#262826] border-b border-gray-200/60">
       {/* Left: Logo / Company name */}
       <div className="flex items-center gap-2">
         <Image
