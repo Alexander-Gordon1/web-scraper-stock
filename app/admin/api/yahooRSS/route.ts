@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Parser from 'rss-parser';
 import {createHash} from "crypto";
 import { incertArticle } from "@/app/admin/lib/incertArticle";
+import { checkCronAuth } from "@/app/lib/cronAuth";
 
 const parser = new Parser();
 
@@ -17,12 +18,8 @@ export async function GET(req: NextRequest) {
 
 
   // auth check for cron bot calls every 5 mins
-  const authHeader = req.headers.get('Authorization');
-  const expected = process.env.CronJob;
-
-  if (authHeader !== expected) {
-    return NextResponse.json({ error: 'Unauthorized access to endpoint' }, { status: 401 });
-  }
+  const unauthorized = checkCronAuth(req);
+  if (unauthorized) return unauthorized;
 
 
 

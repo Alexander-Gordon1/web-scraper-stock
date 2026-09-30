@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 import { TICKER_OPTIONS as tickers } from "@/app/user/lib/tickers";
+import { checkCronAuth } from "@/app/lib/cronAuth";
 
 type FinnhubQuote = {
   c: number;
@@ -18,14 +19,10 @@ export async function GET(req: NextRequest) {
   const apiKey = process.env.FinnHubApiKey!;
   const supabaseUrl = process.env.Supabase_URL!;
   const supabaseSecret = process.env.Supabase_secret!;
-  const cronJobToken = process.env.CronJob;
 
   // auth check for cron bot calls every 5 mins
-  const authHeader = req.headers.get('Authorization');
-
-  if (authHeader !== cronJobToken) {
-    return NextResponse.json({ error: 'Unauthorized access to endpoint' }, { status: 401 });
-  }
+  const unauthorized = checkCronAuth(req);
+  if (unauthorized) return unauthorized;
 
   
   
