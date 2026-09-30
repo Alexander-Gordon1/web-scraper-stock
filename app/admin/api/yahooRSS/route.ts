@@ -1,142 +1,173 @@
 // app/admin/api/yahooRSS/route.ts
 import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import Parser from 'rss-parser';
-import {createHash} from "crypto";
-import { incertArticle } from "@/app/admin/lib/incertArticle";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import Parser from "rss-parser";
+import { createHash, randomUUID } from "crypto";
 import { checkCronAuth } from "@/app/lib/cronAuth";
+import { MARKET_NEWS_SYMBOL, TICKER_OPTIONS, yahooFeedUrl } from "@/app/user/lib/tickers";
 
-const parser = new Parser();
+// fetching 22 feeds can take a while
+export const maxDuration = 60;
+
+const parser = new Parser({ timeout: 15000, headers: { "User-Agent": "Mozilla/5.0" } });
+
+// one feed per stock, plus one for general market news
+const FEED_SYMBOLS = [...TICKER_OPTIONS, MARKET_NEWS_SYMBOL];
+const CONCURRENCY = 4; // feeds fetched at once, to go easy on Yahoo
+
+type Feed = { id: string; symbol: string; url: string };
+type FeedResult = { symbol: string; status: "unchanged" | "updated" | "error"; newArticles?: number; error?: string };
+
+// kept in memory between calls (while the server stays warm), filled from the rss table when empty:
+// the feeds to fetch, and each feed's hash from its last run (to spot when nothing has changed)
+let feeds: Feed[] = [];
+const feedHashes = new Map<string, string | null>(); // rss id -> hash
 
 function computeHash(content: string): string {
-  const hash = createHash('sha256');
-  hash.update(content);
-  return hash.digest('hex');
+  return createHash("sha256").update(content).digest("hex");
 }
 
+// fills `feeds` and `feedHashes` from the rss table, first creating a row
+// (with its Yahoo url) for any stock that doesn't have one yet
+async function loadFeeds(supabase: SupabaseClient) {
+  const { data: existing, error } = await supabase.from("rss").select("symbol").not("symbol", "is", null);
+  if (error) throw new Error(`Failed to read rss feeds: ${error.message}`);
+
+  const have = new Set((existing ?? []).map((row) => row.symbol));
+  const missing = FEED_SYMBOLS.filter((symbol) => !have.has(symbol));
+
+  if (missing.length > 0) {
+    const { error: insertError } = await supabase.from("rss").upsert(
+      missing.map((symbol) => ({
+        id: randomUUID(),
+        symbol,
+        rssURL: yahooFeedUrl(symbol),
+        source_name: "Yahoo Finance",
+        event_type: symbol === MARKET_NEWS_SYMBOL ? "market_news" : "ticker_news",
+        is_active: true,
+      })),
+      { onConflict: "symbol", ignoreDuplicates: true }
+    );
+    if (insertError) throw new Error(`Failed to create rss feeds: ${insertError.message}`);
+    console.log(`Created rss feeds for: ${missing.join(", ")}`);
+  }
+
+  // only active feeds for the stocks we track (feeds can be paused with is_active)
+  const { data, error: loadError } = await supabase
+    .from("rss")
+    .select("id, symbol, rssURL, feedHashed")
+    .in("symbol", FEED_SYMBOLS)
+    .eq("is_active", true);
+  if (loadError) throw new Error(`Failed to read rss feeds: ${loadError.message}`);
+
+  feeds = (data ?? []).map((row) => ({ id: row.id, symbol: row.symbol, url: row.rssURL }));
+  feedHashes.clear();
+  for (const row of data ?? []) feedHashes.set(row.id, row.feedHashed);
+}
+
+// fetches one feed and stores any articles we don't have yet, linked to this feed
+async function ingestFeed(supabase: SupabaseClient, feed: Feed): Promise<FeedResult> {
+  const parsed = await parser.parseURL(feed.url);
+  const items = parsed.items.filter((item) => item.title && item.link);
+
+  // same articles as last time -> nothing to do
+  const hash = computeHash(JSON.stringify(items.map((item) => item.guid ?? item.link)));
+  if (feedHashes.get(feed.id) === hash) return { symbol: feed.symbol, status: "unchanged" };
+
+  // hash by guid (or link), so the same article from two feeds is stored once
+  const rows = items.map((item) => ({
+    rss_id: feed.id, // the feed it was first seen in
+    title: item.title!,
+    link: item.link!,
+    pub_date: item.isoDate ?? item.pubDate ?? null,
+    guid: item.guid ?? item.link!,
+    content_hash: computeHash(item.guid ?? item.link!),
+    raw_payload: item,
+  }));
+
+  let newArticles = 0;
+  if (rows.length > 0) {
+    // insert the new ones; articles we already have are skipped
+    const { data: inserted, error: insertError } = await supabase
+      .from("rss_articles")
+      .upsert(rows, { onConflict: "content_hash", ignoreDuplicates: true })
+      .select("id");
+    if (insertError) throw new Error(`Failed to store articles: ${insertError.message}`);
+    newArticles = inserted?.length ?? 0;
+
+    // link every article in the feed (new or already stored) to this feed
+    const { data: articles, error: idError } = await supabase
+      .from("rss_articles")
+      .select("id")
+      .in("content_hash", rows.map((row) => row.content_hash));
+    if (idError) throw new Error(`Failed to look up articles: ${idError.message}`);
+
+    const { error: linkError } = await supabase.from("rss_article_feeds").upsert(
+      (articles ?? []).map((article) => ({ article_id: article.id, rss_id: feed.id })),
+      { onConflict: "article_id,rss_id", ignoreDuplicates: true }
+    );
+    if (linkError) throw new Error(`Failed to link articles to feed: ${linkError.message}`);
+  }
+
+  // remember this run, so an unchanged feed is skipped next time
+  const dates = rows.map((row) => Date.parse(row.pub_date ?? "")).filter((t) => !isNaN(t));
+  const { error: updateError } = await supabase
+    .from("rss")
+    .update({
+      feedHashed: hash,
+      ...(dates.length > 0 && { latestItem: new Date(Math.max(...dates)).toISOString() }),
+    })
+    .eq("id", feed.id);
+  if (updateError) throw new Error(`Failed to update feed tracking: ${updateError.message}`);
+
+  feedHashes.set(feed.id, hash);
+  return { symbol: feed.symbol, status: "updated", newArticles };
+}
+
+// called by the cron job every 10-15 minutes
 export async function GET(req: NextRequest) {
-
-
-  // auth check for cron bot calls every 5 mins
   const unauthorized = checkCronAuth(req);
   if (unauthorized) return unauthorized;
 
+  const supabaseURL = process.env.Supabase_URL;
+  const supabaseKEY = process.env.Supabase_secret;
+  if (!supabaseURL || !supabaseKEY) {
+    return NextResponse.json({ error: "Missing Supabase environment variables" }, { status: 500 });
+  }
+  const supabase = createClient(supabaseURL, supabaseKEY);
 
-
-  //fetch feed 
-  const feed = await parser.parseURL('https://finance.yahoo.com/news/rssindex');
-  const rss_id = '9ce7f6b7-bcfc-4220-bc74-ae47a86bca5c'; //id in rss table for yahoo finance infomration and tracker columns 
-
-  //hashed feed to compare if new feed is different from previous feed 
-  const hashedFeed = computeHash(JSON.stringify(feed.items));
-
-  // parse every item's pubDate into a real Date, dropping anything missing/invalid
-  // rather than trusting feed.items[0] to always be the newest (ordering isn't guaranteed)
-  const validDates = feed.items
-    .map((item) => (item.pubDate ? new Date(item.pubDate) : null))
-    .filter((d): d is Date => d !== null && !isNaN(d.getTime()));
-
-  const mostRecentItemDate = validDates.length > 0
-    ? new Date(Math.max(...validDates.map((d) => d.getTime())))
-    : null;
-
-  //fetching latest article date from database to compare with mostrecentitemdate  
-  const supabaseURL = process.env.Supabase_URL!;
-  const supabaseKEY = process.env.Supabase_secret!;
-
-  //creating supabase client 
-  const supabase = createClient(supabaseURL, supabaseKEY);  
-
-  //query for latest article time
-  const { data, error } = await supabase
-    .from("rss")
-    .select("feedHashed, latestItem")
-    .eq("rssURL", 'https://finance.yahoo.com/news/rssindex')
-    .maybeSingle();
-
-  if (error) {
-    console.error("Failed to fetch existing rss row:", error);
-    return NextResponse.json({ error: "Database fetch failed" }, { status: 500 });
-    }
-
-  
-  const storedHash = data?.feedHashed ?? null;
-  const storedLatestItem = data?.latestItem ? new Date(data.latestItem) : null;
-
-  
-  if (hashedFeed !== storedHash){
-
-    if(storedLatestItem && mostRecentItemDate && mostRecentItemDate <= storedLatestItem){
-      console.log("No new articles to ingest.");
-      return NextResponse.json({ message: "No new articles to ingest." });
-    }
-
-
-    //articles found as hash is different and time is different. 
-    else{
-      console.log("New articles found. Ingesting...");
-
-      // build array of only the items newer than what we already have stored
-      const newItems = feed.items.filter((item) => {
-        if (!item.pubDate) return false;    // can't compare, skip it
-
-        const itemDate = new Date(item.pubDate);
-        if (isNaN(itemDate.getTime())) return false; // malformed date, skip it rather than silently failing the comparison
-
-        if (!storedLatestItem) return true; // nothing stored yet, treat everything as new
-        return itemDate > storedLatestItem;
-      });
-
-      console.log(`${newItems.length} new item(s) to ingest.`);
-
-      for (const item of newItems) {
-        const payload = {
-          rss_id: rss_id,
-          title: item.title ?? "no title found",
-          link: item.link ?? "no link found",
-          pubDate: item.pubDate ?? null,
-          guid: item.guid ?? item.link ?? null,
-          content_hash: computeHash(JSON.stringify(item)),
-          raw_payload: item,
-        };
-        await incertArticle(payload);
-      }
-
-      // only update the tracking row if we have a valid date to record —
-      // otherwise a null would overwrite the good stored value and re-trigger
-      // a "treat everything as new" state on the next run
-      if (mostRecentItemDate) {
-        const { error: updateError } = await supabase
-          .from("rss")
-          .update({
-            feedHashed: hashedFeed,
-            latestItem: mostRecentItemDate.toISOString(),
-          })
-          .eq("rssURL", 'https://finance.yahoo.com/news/rssindex');
-
-        if (updateError) {
-          console.error("Failed to update rss tracking row:", updateError);
-          return NextResponse.json({ error: "Failed to update rss tracking row" }, { status: 500 });
-        }
-      } else {
-        console.warn("No valid dates found in feed — skipping latestItem update to avoid wiping stored value.");
-      }
-
-      return NextResponse.json({
-        title: feed.title,
-        newItemsIngested: newItems.length,
-        items: newItems,
-      });
-
+  // fill the feed list (and hashes) from the database if this is a fresh start
+  if (feeds.length === 0) {
+    try {
+      await loadFeeds(supabase);
+    } catch (e) {
+      console.error(e);
+      return NextResponse.json({ error: e instanceof Error ? e.message : "Failed to load feeds" }, { status: 500 });
     }
   }
-  else if (storedHash === hashedFeed && storedLatestItem && mostRecentItemDate && mostRecentItemDate > storedLatestItem) {
-    console.log("Hash unchanged but latest item date advanced — investigate.");
-    return NextResponse.json({ message: "Anomaly: hash same, date newer. Check needed." });
-}
-else {
-  console.log("No changes to articles found.");
-  return NextResponse.json({ message: "No changes to articles found." });
-}
 
+  // a few feeds at a time; one feed failing doesn't stop the others
+  const results: FeedResult[] = [];
+  for (let i = 0; i < feeds.length; i += CONCURRENCY) {
+    const batch = feeds.slice(i, i + CONCURRENCY);
+    const settled = await Promise.allSettled(batch.map((feed) => ingestFeed(supabase, feed)));
+    settled.forEach((result, j) => {
+      if (result.status === "fulfilled") {
+        results.push(result.value);
+      } else {
+        const error = result.reason instanceof Error ? result.reason.message : String(result.reason);
+        console.error(`Yahoo feed ${batch[j].symbol} failed:`, error);
+        results.push({ symbol: batch[j].symbol, status: "error", error });
+      }
+    });
+  }
+
+  return NextResponse.json({
+    feeds: results.length,
+    updated: results.filter((r) => r.status === "updated").length,
+    unchanged: results.filter((r) => r.status === "unchanged").length,
+    errors: results.filter((r) => r.status === "error").length,
+    newArticles: results.reduce((sum, r) => sum + (r.newArticles ?? 0), 0),
+    results,
+  });
 }

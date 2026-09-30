@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { TICKER_KEYWORDS, TICKER_OPTIONS } from "@/app/user/lib/tickers";
+import { MARKET_NEWS_SYMBOL, TICKER_KEYWORDS, TICKER_OPTIONS } from "@/app/user/lib/tickers";
 
 const MAX_MARKET_ARTICLES = 30;
 
 type Article = { title: string; link: string; pub_date: string };
+
+// an article plus the feeds it was found in (via the rss_article_feeds link table)
+type ArticleRow = Article & {
+  rss_article_feeds: { rss: { symbol: string | null } | null }[] | null;
+};
 
 // matches any of the ticker's names as a whole word, e.g. "Apple" but not "Pineapple"
 function keywordPattern(symbol: string) {
@@ -13,7 +18,11 @@ function keywordPattern(symbol: string) {
 }
 
 // returns the news published between `from` and `to`, split into
-// articles about the symbol and the rest of the market news.
+// articles about the symbol and general market news.
+//
+// "about the symbol" = found in that stock's Yahoo feed, or (for older articles from before
+// feeds were per-stock) mentioning the company by name.
+// "market news" = found in the market feed (^GSPC), or older untagged articles.
 // e.g. GET /user/api/news?symbol=AAPL&from=2026-09-22T23:00:00Z&to=2026-09-23T23:00:00Z
 export async function GET(request: NextRequest) {
   const supabaseUrl = process.env.Supabase_URL;
@@ -37,10 +46,10 @@ export async function GET(request: NextRequest) {
 
   const supabase = createClient(supabaseUrl, supabaseSecret);
 
-  // ~250 articles a day, so one page of 1000 covers it
+  // a few hundred articles a day at most, so one page of 1000 covers it
   const { data, error } = await supabase
     .from("rss_articles")
-    .select("title, link, pub_date")
+    .select("title, link, pub_date, rss_article_feeds(rss(symbol))")
     .gte("pub_date", from.toISOString())
     .lt("pub_date", to.toISOString())
     .order("pub_date", { ascending: false })
@@ -53,15 +62,28 @@ export async function GET(request: NextRequest) {
 
   // only real web links (the scraper stores "no link found" when an item has none), no duplicates
   const seen = new Set<string>();
-  const articles = (data ?? []).filter((a: Article) => {
-    if (!/^https?:\/\//.test(a.link) || seen.has(a.link)) return false;
-    seen.add(a.link);
-    return true;
-  });
+  const articles = ((data ?? []) as unknown as ArticleRow[])
+    .filter((a) => {
+      if (!/^https?:\/\//.test(a.link) || seen.has(a.link)) return false;
+      seen.add(a.link);
+      return true;
+    })
+    .map(({ rss_article_feeds, ...a }) => ({
+      ...a,
+      // the stocks whose feeds this article appeared in, e.g. ["NVDA", "AMD"]
+      tags: (rss_article_feeds ?? []).flatMap((f) => (f.rss?.symbol ? [f.rss.symbol] : [])),
+    }));
 
   const pattern = keywordPattern(symbol);
-  const related = articles.filter((a) => pattern.test(a.title));
-  const market = articles.filter((a) => !pattern.test(a.title)).slice(0, MAX_MARKET_ARTICLES);
+  const isRelated = (a: (typeof articles)[number]) => a.tags.includes(symbol) || pattern.test(a.title);
+  const isMarket = (a: (typeof articles)[number]) => a.tags.includes(MARKET_NEWS_SYMBOL) || a.tags.length === 0;
+
+  const strip = ({ title, link, pub_date }: Article) => ({ title, link, pub_date });
+  const related = articles.filter(isRelated).map(strip);
+  const market = articles
+    .filter((a) => !isRelated(a) && isMarket(a))
+    .slice(0, MAX_MARKET_ARTICLES)
+    .map(strip);
 
   return NextResponse.json({
     symbol,

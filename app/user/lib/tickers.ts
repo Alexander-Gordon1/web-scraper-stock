@@ -36,3 +36,11 @@ export const TICKER_KEYWORDS: Record<string, string[]> = {
   WMT: ["WMT", "Walmart"],
   XOM: ["XOM", "Exxon", "ExxonMobil"],
 };
+
+// Yahoo Finance feed used for general market news (the S&P 500)
+export const MARKET_NEWS_SYMBOL = "^GSPC";
+
+// Yahoo Finance's headline feed for one ticker, e.g. AAPL or ^GSPC.
+// holds roughly the latest 20 articles Yahoo links to that ticker
+export const yahooFeedUrl = (symbol: string) =>
+  `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${encodeURIComponent(symbol)}&region=US&lang=en-US`;
