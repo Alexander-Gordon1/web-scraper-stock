@@ -12,7 +12,7 @@ type TabNavProperties = {
 const TABS = [
   { key: "dashboard", label: "Dashboard" },
   { key: "personal-feed", label: "Personal Feed" },
-  { key: "explore-feed", label: "Explore Feed" },
+  { key: "explore-feed", label: "Invest" },
   { key: "search", label: "Search" },
   { key: "admin", label: "Admin" },
 ];
