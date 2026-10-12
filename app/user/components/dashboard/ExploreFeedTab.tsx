@@ -6,6 +6,8 @@ import { TICKER_OPTIONS, TICKER_CATEGORIES } from "@/app/user/lib/tickers";
 import StockCard, { type StockQuote } from "./InvestComponents/StockCard";
 import InvestSidebar, { type SidebarItem } from "./InvestComponents/InvestSidebar";
 import BankAccount from "./InvestComponents/BankAccount";
+import BuyStockDialog from "./InvestComponents/BuyStockDialog";
+import YourInvestments from "./InvestComponents/YourInvestments";
 
 const ALL_STOCKS = "all-stocks";
 const YOUR_INVESTMENTS = "your-investments";
@@ -20,6 +22,8 @@ export default function ExploreFeedTab() {
   const [activeView, setActiveView] = useState(ALL_STOCKS);
   const cardAreaRef = useRef<HTMLDivElement>(null);
   const [cardAreaHeight, setCardAreaHeight] = useState<number>();
+  // the stock whose buy pop-up is open
+  const [buying, setBuying] = useState<StockQuote | null>(null);
 
   useEffect(() => {
     // latest quote for every stock we track
@@ -92,10 +96,7 @@ export default function ExploreFeedTab() {
         {activeView === BANK_ACCOUNT ? (
           <BankAccount />
         ) : activeView === YOUR_INVESTMENTS ? (
-          <section>
-            <h2 className="mb-3 text-lg font-semibold">Your investments</h2>
-            <p className="text-[#E5EAF5]/60">Stocks you buy will show up here.</p>
-          </section>
+          <YourInvestments quotes={quotes} />
         ) : (
           <>
             <p className="text-lg text-white text-center">
@@ -116,7 +117,7 @@ export default function ExploreFeedTab() {
                   <h2 className="mb-3 text-lg font-semibold">{sector}</h2>
                   <div className="grid grid-cols-[repeat(auto-fill,minmax(0,380px))] gap-4">
                     {bySector.get(sector)!.map((quote) => (
-                      <StockCard key={quote.symbol} quote={quote} />
+                      <StockCard key={quote.symbol} quote={quote} onBuy={setBuying} />
                     ))}
                   </div>
                 </section>
@@ -125,6 +126,8 @@ export default function ExploreFeedTab() {
           </>
         )}
       </div>
+
+      {buying && <BuyStockDialog quote={buying} onClose={() => setBuying(null)} />}
     </div>
   );
 }

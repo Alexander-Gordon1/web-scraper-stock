@@ -20,7 +20,12 @@ function formatNumber(value: number | string | null | undefined) {
   return value === null || value === undefined || Number.isNaN(n) ? "—" : n.toFixed(2);
 }
 
-export default function StockCard({ quote }: { quote: StockQuote }) {
+type StockCardProps = {
+  quote: StockQuote;
+  onBuy?: (quote: StockQuote) => void;
+};
+
+export default function StockCard({ quote, onBuy }: StockCardProps) {
   const change = Number(quote.change ?? 0);
   const percent = Number(quote.percent_change ?? 0);
   const isUp = percent >= 0;
@@ -39,6 +44,7 @@ export default function StockCard({ quote }: { quote: StockQuote }) {
         <h3 className="text-[24px] font-bold tracking-wide">{quote.symbol}</h3>
         <button
           type="button"
+          onClick={() => onBuy?.(quote)}
           className="shrink-0 rounded-md bg-[#9085e9] px-4 py-1 text-sm font-semibold text-white transition-colors hover:bg-[#7b6fe0]"
         >
           Buy
