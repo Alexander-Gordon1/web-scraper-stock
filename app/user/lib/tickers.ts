@@ -5,6 +5,31 @@ export const TICKER_OPTIONS = [
   "META", "MSFT", "NFLX", "NVDA", "SNDK", "TSLA", "UNH", "V", "WMT", "XOM",
 ];
 
+// sector for each ticker, saved in the stocks table's category column
+export const TICKER_CATEGORIES: Record<string, string> = {
+  AMZN: "Consumer Discretionary",
+  TSLA: "Consumer Discretionary",
+  COST: "Consumer Staples",
+  KO: "Consumer Staples",
+  WMT: "Consumer Staples",
+  GOOGL: "Communication Services",
+  META: "Communication Services",
+  NFLX: "Communication Services",
+  XOM: "Energy",
+  JPM: "Financials",
+  V: "Financials",
+  JNJ: "Healthcare",
+  LLY: "Healthcare",
+  UNH: "Healthcare",
+  BA: "Industrials",
+  AAPL: "Technology",
+  AMD: "Technology",
+  AVGO: "Technology",
+  MSFT: "Technology",
+  NVDA: "Technology",
+  SNDK: "Technology",
+};
+
 // shown when the user isn't logged in or hasn't picked any tickers yet
 export const DEFAULT_TICKERS = ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "AVGO", "AMD", "NFLX"];
 

@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-import { TICKER_OPTIONS as tickers } from "@/app/user/lib/tickers";
+import { TICKER_OPTIONS as tickers, TICKER_CATEGORIES } from "@/app/user/lib/tickers";
 import { checkCronAuth } from "@/app/lib/cronAuth";
 
 type FinnhubQuote = {
@@ -64,6 +64,7 @@ export async function GET(req: NextRequest) {
         open: typeof data.o === "number" ? data.o : null,
         prev_close: typeof data.pc === "number" ? data.pc : null,
         quote_time: quoteTime,
+        category: TICKER_CATEGORIES[symbol] ?? null,
       };
     })
   );
