@@ -5,9 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { TICKER_OPTIONS, TICKER_CATEGORIES } from "@/app/user/lib/tickers";
 import StockCard, { type StockQuote } from "./InvestComponents/StockCard";
 import InvestSidebar, { type SidebarItem } from "./InvestComponents/InvestSidebar";
+import BankAccount from "./InvestComponents/BankAccount";
 
 const ALL_STOCKS = "all-stocks";
 const YOUR_INVESTMENTS = "your-investments";
+const BANK_ACCOUNT = "bank-account";
 const VISIBLE_ROWS = 3; // card area scrolls after this many rows
 
 export default function ExploreFeedTab() {
@@ -76,7 +78,10 @@ export default function ExploreFeedTab() {
       { key: ALL_STOCKS, label: "All stocks" },
       ...sectors.map((sector) => ({ key: sector, label: sector })),
     ],
-    [{ key: YOUR_INVESTMENTS, label: "Your investments" }],
+    [
+      { key: YOUR_INVESTMENTS, label: "Your investments" },
+      { key: BANK_ACCOUNT, label: "Bank account" },
+    ],
   ];
 
   return (
@@ -84,7 +89,9 @@ export default function ExploreFeedTab() {
       <InvestSidebar groups={sidebarGroups} activeKey={activeView} onSelect={setActiveView} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-8">
-        {activeView === YOUR_INVESTMENTS ? (
+        {activeView === BANK_ACCOUNT ? (
+          <BankAccount />
+        ) : activeView === YOUR_INVESTMENTS ? (
           <section>
             <h2 className="mb-3 text-lg font-semibold">Your investments</h2>
             <p className="text-[#E5EAF5]/60">Stocks you buy will show up here.</p>

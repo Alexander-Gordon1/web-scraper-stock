@@ -23,3 +23,7 @@ create table if not exists stock_purchases (
 );
 
 create index if not exists stock_purchases_user_id_idx on stock_purchases (user_id);
+
+-- tables made in the SQL editor don't get API access automatically,
+-- so let the server key (service_role) read and write them
+grant select, insert, update, delete on bank_accounts, stock_purchases to service_role;

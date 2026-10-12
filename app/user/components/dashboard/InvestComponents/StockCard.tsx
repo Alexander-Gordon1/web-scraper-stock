@@ -35,7 +35,15 @@ export default function StockCard({ quote }: { quote: StockQuote }) {
 
   return (
     <div data-stock-card className="flex flex-col gap-3 rounded-lg border border-white/10 bg-[#494D5F]/40 py-4 pl-4 pr-[10px] transition-colors hover:border-[#9085e9]/60">
-      <h3 className="relative -top-[8px] -mb-[21px] text-[24px] font-bold tracking-wide">{quote.symbol}</h3>
+      <div className="relative -top-[8px] -mb-[21px] flex items-start justify-between gap-3">
+        <h3 className="text-[24px] font-bold tracking-wide">{quote.symbol}</h3>
+        <button
+          type="button"
+          className="shrink-0 rounded-md bg-[#9085e9] px-4 py-1 text-sm font-semibold text-white transition-colors hover:bg-[#7b6fe0]"
+        >
+          Buy
+        </button>
+      </div>
 
       {/* price + daily change on the left, day stats on the right */}
       <div className="flex flex-wrap items-end justify-between gap-3">
