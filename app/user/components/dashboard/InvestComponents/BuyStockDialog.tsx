@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { StockQuote } from "./StockCard";
-import { SHARE_DECIMALS, formatShares, money } from "./format";
+import { MIN_ORDER, SHARE_DECIMALS, SHARES_PATTERN, floorShares, formatShares, money } from "./format";
 
 type BuyStockDialogProps = {
   quote: StockQuote;
@@ -18,12 +18,6 @@ type Purchase = {
 
 const inputClass =
   "w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 font-mono text-white focus:border-[#9085e9] focus:outline-none";
-
-const SHARE_STEP = 10 ** SHARE_DECIMALS;
-const MIN_ORDER = 0.01; // smallest order in dollars, so a tiny order can't round to a free one
-// rounds down so the shares never cost more than the money they came from
-const floorShares = (n: number) => Math.floor(n * SHARE_STEP + 1e-9) / SHARE_STEP;
-const SHARES_PATTERN = /^\d*\.?\d{0,6}$/;
 
 // pop-up for buying whole or fractional shares of one stock. shows the user's balance and the most they can afford
 export default function BuyStockDialog({ quote, onClose }: BuyStockDialogProps) {
