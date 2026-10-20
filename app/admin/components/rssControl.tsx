@@ -1,39 +1,12 @@
 // components/admin/rssControl.tsx
 "use client";
-import Link from "next/link";
 
-
-
-
+// prices and news are now collected by the Pi itself, so there's nothing to trigger from here
 export default function RSSControl() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">RSS Control</h1>
-      <p>Manage your RSS feeds and settings here.</p>
-      {/* Add more controls and settings for RSS feeds as needed */}
-
-
-      <div >
-        <button
-          onClick={
-            async () => {
-            const res = await fetch('/user/api/finnHub', { headers: {'Authorization': 'aoqhxbvcydrfi209437845gytfmndbdujv834egwenf9v923784rt239urbdfsdliuyfvcskduyt6tc'}});
-            }
-          }
-          title="Ingest RSS"
-          color="red"
-          className="px-10 py-4 bg-red-500 text-black rounded-md hover:bg-primary-dark transition-colors active:bg-red-700"
-        >
-          Ingest RSS
-        </button>
-      </div>
+      <p>Prices and news are collected automatically by the home server.</p>
     </div>
-    
-    
-
-
-
-
   );
 }
-
