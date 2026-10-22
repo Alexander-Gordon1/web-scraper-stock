@@ -1,9 +1,9 @@
 // app/login/page.tsx
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import IntroRain from "@/app/user/components/IntroRain";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,18 +35,8 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
-      {/* Logo + site name */}
-      <div className="flex flex-col items-center gap-3 ml-[50px] ">
-        <span className="text-6xl ">
-          <Image
-            src="/forge-hammer.svg"
-            alt="Logo"
-            width={650}
-            height={300}
-            unoptimized
-          />
-        </span>
-      </div>
+      {/* Site name, formed by falling characters */}
+      <IntroRain word="Market Rewind" className="md:w-[min(60vw,120vh)]" />
 
       {/* Login form */}
       <form
@@ -73,7 +63,7 @@ export default function LoginPage() {
             placeholder="Enter Username here"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2.5 text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+            className="rounded-lg border border-gray-300 bg-background px-4 py-2.5 text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
           />
         </div>
 
@@ -92,7 +82,7 @@ export default function LoginPage() {
             placeholder="Enter Password here"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2.5 text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+            className="rounded-lg border border-gray-300 bg-background px-4 py-2.5 text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
           />
         </div>
 
