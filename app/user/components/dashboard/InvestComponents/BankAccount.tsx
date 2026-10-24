@@ -11,7 +11,7 @@ type Account = {
 };
 
 const inputClass =
-  "rounded-md border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-[#9085e9] focus:outline-none";
+  "rounded-md border border-[#2f9e5b]/30 bg-black/20 px-3 py-2 text-[#d9ffe6] caret-[#2f9e5b] focus:border-[#2f9e5b] focus:shadow-[0_0_14px_rgba(47,158,91,0.35)] focus:outline-none";
 
 // the logged-in user's bank account: balance, details, and a form to enter or change the details
 export default function BankAccount() {
@@ -77,32 +77,32 @@ export default function BankAccount() {
 
   return (
     <section className="flex max-w-[380px] flex-col gap-4">
-      <h2 className="text-lg font-semibold">Bank account</h2>
+      <h2 className="font-mono text-lg font-bold tracking-wider">Bank account</h2>
 
-      {loading && <p className="text-[#E5EAF5]/60">Loading bank account…</p>}
+      {loading && <p className="text-[#d9ffe6]/60">Loading bank account…</p>}
       {error && <p className="text-red-400">{error}</p>}
 
       {account && (
-        <div className="rounded-lg border border-white/10 bg-[#494D5F]/40 p-4">
-          <p className="text-sm text-[#E5EAF5]/60">Balance</p>
-          <p className="font-mono text-[32px] text-white">${Number(account.balance).toFixed(2)}</p>
+        <div className="rounded-md border border-[#2f9e5b]/30 bg-[#2f9e5b]/10 p-4">
+          <p className="text-sm text-[#d9ffe6]/60">Balance</p>
+          <p className="font-mono text-[32px] text-[#d9ffe6]">${Number(account.balance).toFixed(2)}</p>
         </div>
       )}
 
       {account && !editing && (
-        <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-[#494D5F]/40 p-4">
+        <div className="flex flex-col gap-3 rounded-md border border-[#2f9e5b]/30 bg-[#2f9e5b]/10 p-4">
           <dl className="flex flex-col gap-3">
             {details.map((detail) => (
               <div key={detail.label} className="flex justify-between gap-4">
-                <dt className="text-[#E5EAF5]/60">{detail.label}</dt>
-                <dd className="text-white">{detail.value}</dd>
+                <dt className="text-[#d9ffe6]/60">{detail.label}</dt>
+                <dd className="text-[#d9ffe6]">{detail.value}</dd>
               </div>
             ))}
           </dl>
           <button
             type="button"
             onClick={startEditing}
-            className="self-end rounded-md bg-[#9085e9] px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#7b6fe0]"
+            className="self-end rounded-md border border-[#2f9e5b] bg-[#2f9e5b]/15 px-4 py-1.5 text-sm font-mono font-bold uppercase tracking-widest text-[#d9ffe6] transition hover:bg-[#2f9e5b] hover:text-black hover:shadow-[0_0_14px_rgba(47,158,91,0.45)]"
           >
             Edit details
           </button>
@@ -112,11 +112,11 @@ export default function BankAccount() {
       {showForm && (
         <form
           onSubmit={handleSave}
-          className="flex flex-col gap-3 rounded-lg border border-white/10 bg-[#494D5F]/40 p-4"
+          className="flex flex-col gap-3 rounded-md border border-[#2f9e5b]/30 bg-[#2f9e5b]/10 p-4"
         >
-          {!account && <p className="text-[#E5EAF5]/60">Enter your bank details to open an account.</p>}
+          {!account && <p className="text-[#d9ffe6]/60">Enter your bank details to open an account.</p>}
 
-          <label className="flex flex-col gap-1 text-sm text-[#E5EAF5]/80">
+          <label className="flex flex-col gap-1 font-mono text-xs uppercase tracking-[0.2em] text-[#2f9e5b]">
             Bank name
             <input
               value={bankName}
@@ -127,7 +127,7 @@ export default function BankAccount() {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-sm text-[#E5EAF5]/80">
+          <label className="flex flex-col gap-1 font-mono text-xs uppercase tracking-[0.2em] text-[#2f9e5b]">
             Account number
             <input
               value={accountNumber}
@@ -144,7 +144,7 @@ export default function BankAccount() {
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="rounded-md px-3 py-1.5 text-sm text-[#E5EAF5]/70 transition-colors hover:bg-white/5 hover:text-white"
+                className="rounded-md px-3 py-1.5 text-sm text-[#d9ffe6]/70 transition-colors hover:bg-[#2f9e5b]/10 hover:text-[#d9ffe6]"
               >
                 Cancel
               </button>
@@ -152,7 +152,7 @@ export default function BankAccount() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-md bg-[#9085e9] px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#7b6fe0] disabled:opacity-50"
+              className="rounded-md border border-[#2f9e5b] bg-[#2f9e5b]/15 px-4 py-1.5 text-sm font-mono font-bold uppercase tracking-widest text-[#d9ffe6] transition hover:bg-[#2f9e5b] hover:text-black hover:shadow-[0_0_14px_rgba(47,158,91,0.45)] disabled:opacity-50"
             >
               {saving ? "Saving…" : "Save"}
             </button>

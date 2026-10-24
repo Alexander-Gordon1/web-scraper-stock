@@ -5,7 +5,8 @@ import { useState } from "react";
 import StockChart from "./StockChart";
 import SelectBox from "./SelectBox";
 import DateBox from "./DateBox";
-import { TICKER_OPTIONS } from "@/app/user/lib/tickers";
+import SectionIntro from "./SectionIntro";
+import { DEFAULT_TICKERS, TICKER_OPTIONS } from "@/app/user/lib/tickers";
 import { TIME_RANGES, isTimeRange, type TimeRange } from "@/app/user/lib/timeRanges";
 
 const SLOTS = 3;
@@ -18,8 +19,8 @@ const GRID_COLS: Record<number, string> = {
 };
 
 export default function CompareStocksSection() {
-  // "" = nothing picked in that box
-  const [slots, setSlots] = useState<string[]>(Array(SLOTS).fill(""));
+  // starts with three stocks so there's something to compare straight away. "" = nothing picked in that box
+  const [slots, setSlots] = useState<string[]>(DEFAULT_TICKERS.slice(0, SLOTS));
   const [range, setRange] = useState<TimeRange>("1D");
   const [start, setStart] = useState(""); // "" = show the most recent period
 
@@ -31,7 +32,10 @@ export default function CompareStocksSection() {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-[#E5EAF5] mb-2">Compare stocks</h3>
+      <SectionIntro title="Compare">
+        Pick up to three stocks to see their charts side by side. They all share the same time period and
+        start date, so you can see how they moved against each other.
+      </SectionIntro>
 
       {/* three ticker boxes + the time period and start date boxes */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
@@ -60,7 +64,7 @@ export default function CompareStocksSection() {
 
       {/* the picked stocks' graphs, sized to fit 1, 2 or 3 side by side */}
       {selected.length === 0 ? (
-        <div className="mt-3 rounded-lg border border-dashed border-[#D0BDF4]/50 p-6 text-center text-sm text-[#E5EAF5]/60">
+        <div className="mt-3 rounded-lg border border-dashed border-[#2f9e5b]/30 p-6 text-center text-sm text-[#d9ffe6]/60">
           Pick up to three tickers above to compare them.
         </div>
       ) : (

@@ -99,8 +99,8 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
         aria-label={value ? `Start date: ${buttonLabel}. Change start date` : "Choose a start date"}
         className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
           value
-            ? "border-[#9085e9] text-[#E5EAF5]"
-            : "border-white/10 text-[#E5EAF5]/60 hover:bg-white/10 hover:text-[#E5EAF5]"
+            ? "border-[#2f9e5b] text-[#d9ffe6]"
+            : "border-[#2f9e5b]/30 text-[#d9ffe6]/60 hover:bg-[#2f9e5b]/15 hover:text-[#d9ffe6]"
         }`}
       >
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -116,7 +116,7 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
           ref={popoverRef}
           role="dialog"
           aria-label="Choose a start date"
-          className="fixed z-50 rounded-lg border border-white/10 bg-[#1a1a1a] p-3 text-[#E5EAF5] shadow-xl"
+          className="fixed z-50 rounded-lg border border-[#2f9e5b]/30 bg-black/85 backdrop-blur-sm p-3 text-[#d9ffe6] shadow-xl"
           style={{ ...position, width: POPOVER_WIDTH }}
         >
           {/* month navigation */}
@@ -125,7 +125,7 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
               type="button"
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
               aria-label="Previous month"
-              className="flex h-7 w-7 items-center justify-center rounded-md text-[#E5EAF5]/70 hover:bg-white/10"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-[#d9ffe6]/70 hover:bg-[#2f9e5b]/15"
             >
               ‹
             </button>
@@ -137,7 +137,7 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
               disabled={isCurrentMonth}
               aria-label="Next month"
-              className="flex h-7 w-7 items-center justify-center rounded-md text-[#E5EAF5]/70 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-[#d9ffe6]/70 hover:bg-[#2f9e5b]/15 disabled:opacity-30 disabled:hover:bg-transparent"
             >
               ›
             </button>
@@ -146,7 +146,7 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
           {/* day grid */}
           <div className="grid grid-cols-7 gap-1 text-center">
             {WEEKDAYS.map((d) => (
-              <span key={d} className="py-1 text-[10px] font-semibold text-[#E5EAF5]/40">
+              <span key={d} className="py-1 text-[10px] font-semibold text-[#d9ffe6]/40">
                 {d}
               </span>
             ))}
@@ -165,10 +165,10 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
                   aria-label={date.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" })}
                   className={`h-8 rounded-md text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-25 ${
                     isSelected
-                      ? "bg-[#9085e9] font-semibold text-[#1a1a1a]"
+                      ? "bg-[#2f9e5b] font-semibold text-black"
                       : v === today
-                        ? "border border-[#9085e9]/60 hover:bg-white/10"
-                        : "hover:bg-white/10"
+                        ? "border border-[#2f9e5b]/60 hover:bg-[#2f9e5b]/15"
+                        : "hover:bg-[#2f9e5b]/15"
                   }`}
                 >
                   {date.getDate()}
@@ -182,7 +182,7 @@ export default function CalendarDropdown({ value, onChange }: { value: string; o
             type="button"
             onClick={() => pick("")}
             disabled={!value}
-            className="mt-3 w-full rounded-md border border-white/10 py-1.5 text-xs text-[#E5EAF5]/70 hover:bg-white/10 hover:text-[#E5EAF5] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+            className="mt-3 w-full rounded-md border border-[#2f9e5b]/30 py-1.5 text-xs text-[#d9ffe6]/70 hover:bg-[#2f9e5b]/15 hover:text-[#d9ffe6] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
           >
             Deselect · show latest
           </button>

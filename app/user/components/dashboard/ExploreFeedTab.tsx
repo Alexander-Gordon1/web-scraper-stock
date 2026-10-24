@@ -8,6 +8,7 @@ import InvestSidebar, { type SidebarItem } from "./InvestComponents/InvestSideba
 import BankAccount from "./InvestComponents/BankAccount";
 import BuyStockDialog from "./InvestComponents/BuyStockDialog";
 import YourInvestments from "./InvestComponents/YourInvestments";
+import SectionIntro from "./PersonalDashComponents/SectionIntro";
 
 const ALL_STOCKS = "all-stocks";
 const YOUR_INVESTMENTS = "your-investments";
@@ -55,8 +56,10 @@ export default function ExploreFeedTab() {
           )
         ),
       ].sort((x, y) => x - y);
-      // fewer rows than the limit = no need to scroll
-      setCardAreaHeight(rowBottoms.length > VISIBLE_ROWS ? rowBottoms[VISIBLE_ROWS - 1] : undefined);
+      // fewer rows than the limit = no need to scroll. phones (one card per row) skip the cap,
+      // since a small scroll box inside the page is awkward to swipe through
+      const isPhone = !window.matchMedia("(min-width: 768px)").matches;
+      setCardAreaHeight(!isPhone && rowBottoms.length > VISIBLE_ROWS ? rowBottoms[VISIBLE_ROWS - 1] : undefined);
     }
 
     measure();
@@ -99,12 +102,12 @@ export default function ExploreFeedTab() {
           <YourInvestments quotes={quotes} />
         ) : (
           <>
-            <p className="text-lg text-white text-center">
-              Here you can use the knowledge you have gained viewing the news and
-              stocks and put your money where your mouth is
-            </p>
+            <SectionIntro title="Invest">
+              Here you can use the knowledge you have gained viewing the news and stocks and put your money
+              where your mouth is. Press Buy on any stock to invest with your bank balance.
+            </SectionIntro>
 
-            {loading && <p className="text-center text-[#E5EAF5]/60">Loading stocks…</p>}
+            {loading && <p className="text-center text-[#d9ffe6]/60">Loading stocks…</p>}
             {error && <p className="text-center text-red-400">{error}</p>}
 
             <div
@@ -114,7 +117,7 @@ export default function ExploreFeedTab() {
             >
               {shownSectors.map((sector) => (
                 <section key={sector}>
-                  <h2 className="mb-3 text-lg font-semibold">{sector}</h2>
+                  <h2 className="mb-3 font-mono text-lg font-bold tracking-wider">{sector}</h2>
                   <div className="grid grid-cols-[repeat(auto-fill,minmax(0,380px))] gap-4">
                     {bySector.get(sector)!.map((quote) => (
                       <StockCard key={quote.symbol} quote={quote} onBuy={setBuying} />

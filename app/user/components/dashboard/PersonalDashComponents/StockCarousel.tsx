@@ -31,12 +31,38 @@ export default function StockCarousel({
   const [range, setRange] = useState<TimeRange>(initialRange);
   const [start, setStart] = useState(""); // "" = latest period, counting back from now
   const trackRef = useRef<HTMLDivElement>(null);
+  const dotsRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+  const [dragged, setDragged] = useState(false); // hides the "drag to navigate" hint once used
 
-  function goTo(index: number) {
+  function goTo(index: number, behavior: ScrollBehavior = "smooth") {
     const track = trackRef.current;
     const slide = track?.children[index] as HTMLElement | undefined;
     if (!track || !slide) return;
-    track.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
+    track.scrollTo({ left: slide.offsetLeft, behavior });
+  }
+
+  // dragging along the dots jumps straight to the stock whose dot is nearest the pointer
+  // (measured in both directions in case the dots wrap onto a second row)
+  function dragTo(e: React.PointerEvent) {
+    const dots = Array.from(dotsRef.current?.children ?? []);
+    if (!dots.length) return;
+    const distance = (el: Element) => {
+      const r = el.getBoundingClientRect();
+      return Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY);
+    };
+    let nearest = 0;
+    dots.forEach((dot, i) => {
+      if (distance(dot) < distance(dots[nearest])) nearest = i;
+    });
+    if (nearest !== current) goTo(nearest, "instant");
+  }
+
+  function handleDotsPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    dragging.current = true;
+    setDragged(true);
+    e.currentTarget.setPointerCapture(e.pointerId); // keep following the pointer off the dots
+    dragTo(e);
   }
 
   // work out which slide is showing from the scroll position
@@ -58,7 +84,7 @@ export default function StockCarousel({
   }
 
   const arrowClass =
-    "flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-lg text-[#E5EAF5]/70 hover:bg-white/10 hover:text-[#E5EAF5] disabled:opacity-30 disabled:hover:bg-transparent transition-colors";
+    "hidden h-8 w-8 items-center justify-center rounded-md sm:flex border border-[#2f9e5b]/30 text-lg text-[#d9ffe6]/70 hover:bg-[#2f9e5b]/15 hover:text-[#d9ffe6] disabled:opacity-30 disabled:hover:bg-transparent transition-colors";
 
   return (
     <div>
@@ -94,8 +120,8 @@ export default function StockCarousel({
         ))}
       </div>
 
-      {/* controls */}
-      <div className="mt-3 flex items-center justify-between gap-3">
+      {/* controls: arrows either side of the dots. phones just swipe, so they only get a counter */}
+      <div className="mt-3 flex items-center justify-center gap-3">
         <button
           type="button"
           onClick={() => goTo(current - 1)}
@@ -107,11 +133,19 @@ export default function StockCarousel({
         </button>
 
         {/* phones: counter instead of dots */}
-        <p className="text-xs text-[#E5EAF5]/60 sm:hidden" aria-live="polite">
+        <p className="text-xs text-[#d9ffe6]/60 sm:hidden" aria-live="polite">
           {symbols[current]} · {current + 1} / {symbols.length}
         </p>
 
-        <div className="hidden flex-wrap justify-center gap-1.5 sm:flex">
+        {/* touch-none stops a finger drag from scrolling the page instead */}
+        <div
+          ref={dotsRef}
+          onPointerDown={handleDotsPointerDown}
+          onPointerMove={(e) => dragging.current && dragTo(e)}
+          onPointerUp={() => (dragging.current = false)}
+          onPointerCancel={() => (dragging.current = false)}
+          className="hidden cursor-grab touch-none flex-wrap justify-center gap-1.5 py-2 select-none active:cursor-grabbing sm:flex"
+        >
           {symbols.map((symbol, i) => (
             <button
               key={symbol}
@@ -121,7 +155,7 @@ export default function StockCarousel({
               aria-current={i === current}
               title={symbol}
               className={`h-2 rounded-full transition-all ${
-                i === current ? "w-5 bg-[#9085e9]" : "w-2 bg-[#E5EAF5]/25 hover:bg-[#E5EAF5]/50"
+                i === current ? "w-5 bg-[#2f9e5b]" : "w-2 bg-[#d9ffe6]/25 hover:bg-[#d9ffe6]/50"
               }`}
             />
           ))}
@@ -137,6 +171,16 @@ export default function StockCarousel({
           ›
         </button>
       </div>
+
+      {/* fades out after the first drag; keeps its space so nothing jumps */}
+      <p
+        aria-hidden="true"
+        className={`mt-1 hidden text-center font-mono text-xs uppercase tracking-[0.2em] text-[#2f9e5b] transition-opacity duration-500 sm:block ${
+          dragged ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        ‹ drag to navigate ›
+      </p>
     </div>
   );
 }

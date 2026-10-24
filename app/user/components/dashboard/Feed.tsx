@@ -39,7 +39,7 @@ const SENTIMENTS = [
   if (articles.length === 0) return <p className="text-center text-gray-500 py-8">No articles found.</p>;
 
   return (
-    <div className="flex flex-col gap-8 py-5 px-10 bg-[#262826]">
+    <div className="flex flex-col gap-8 py-5 md:px-10 bg-[#262826]">
       {SENTIMENTS.map(({ label, colour }) => {
         const group = articles.filter((a) => a.overall_sentiment_label === label);
         if (group.length === 0) return null;

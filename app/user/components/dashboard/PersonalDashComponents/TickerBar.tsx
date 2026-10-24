@@ -13,15 +13,18 @@ function TickerItem({ label, value, changePercent }: TickerItemProps) {
   const isUp = changePercent >= 0;
 
   return (
-    <div className="flex shrink-0 items-center justify-between gap-6 px-4 py-2 min-w-[140px]">
+    <div className="flex shrink-0 items-center justify-between gap-6 px-4 py-2 min-w-[140px] font-mono">
       <span
-        className={`text-[16px] font-semibold tracking-wide ${
-          isUp ? "text-green-500" : "text-red-500"
+        className={`text-[15px] font-bold tracking-widest ${
+          isUp ? "text-[#2f9e5b]" : "text-red-400"
         }`}
       >
+        <span aria-hidden="true" className="mr-1.5 text-[10px]">
+          {isUp ? "▲" : "▼"}
+        </span>
         {label}
       </span>
-      <span className="text-sm font-mono text-white/70">
+      <span className="text-sm text-[#d9ffe6]/70">
         {typeof value === "number" ? value.toFixed(2) : "—"}
       </span>
     </div>
@@ -117,18 +120,19 @@ export default function TickerBar() {
   }
 
   return (
-    // -mx-10 / -mt-4 cancel the dashboard's px-10 py-4 padding so the bar runs edge to edge
-    // and sits right under the nav's bottom line; border-b matches that line
-    <div ref={containerRef} className="relative -mx-10 -mt-4 bg-[black] flex items-stretch border-b border-gray-200/60">
+    // -mx-4 md:-mx-10 / -mt-4 cancel the dashboard's px-4 md:px-10 py-4 padding so the bar runs edge to edge
+    // and sits right under the nav's bottom line; border-b matches that line.
+    // backdrop-blur makes the bar its own stacking layer, so z-30 keeps the dropdown above the graph
+    <div ref={containerRef} className="relative z-30 -mx-4 -mt-4 flex md:-mx-10 items-stretch border-b border-[#2f9e5b]/30 bg-black/60 backdrop-blur-sm">
       {/* same width as the + button, so the tickers are centred across the whole bar */}
       <div className="ml-2.5 w-8 shrink-0" aria-hidden="true" />
 
       {/* justify-center-safe: centred, but falls back to left-aligned when they don't all fit */}
-      <div className="flex flex-1 items-stretch justify-center-safe overflow-hidden">
+      <div className="flex flex-1 items-stretch justify-center-safe overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {tickerItems.map((item, i) => (
           <Fragment key={item.label}>
             {/* divider between tickers, 8px in from the top and bottom */}
-            {i > 0 && <span className="my-2 w-px shrink-0 bg-gray-200" aria-hidden="true" />}
+            {i > 0 && <span className="my-2 w-px shrink-0 bg-[#2f9e5b]/30" aria-hidden="true" />}
             <TickerItem {...item} />
           </Fragment>
         ))}
@@ -139,14 +143,14 @@ export default function TickerBar() {
         onClick={() => setOpen((o) => !o)}
         aria-label="Add tickers"
         aria-expanded={open}
-        className="mr-2.5 flex h-8 w-8 shrink-0 self-center items-center justify-center rounded-md text-2xl leading-none text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+        className="mr-2.5 flex h-8 w-8 shrink-0 self-center items-center justify-center rounded-md border border-[#2f9e5b]/40 font-mono text-xl leading-none text-[#2f9e5b] transition hover:border-[#2f9e5b] hover:bg-[#2f9e5b]/15 hover:text-[#d9ffe6] hover:shadow-[0_0_14px_rgba(47,158,91,0.45)]"
       >
         +
       </button>
 
       {open && (
-        <div className="absolute right-2.5 top-full z-20 mt-2 w-60 rounded-lg border border-white/10 bg-[#1a1a1a] shadow-lg">
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-xs text-white/50">
+        <div className="absolute right-2.5 top-full z-20 mt-2 w-60 rounded-md border border-[#2f9e5b]/40 bg-black/80 font-mono shadow-lg backdrop-blur-sm">
+          <div className="flex items-center justify-between border-b border-[#2f9e5b]/30 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#2f9e5b]">
             <span>Tickers</span>
             <span>
               {selected.length}/{MAX_TICKERS}
@@ -170,13 +174,13 @@ export default function TickerBar() {
                     aria-label={`${isSelected ? "Remove" : "Add"} ${symbol}`}
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-30 ${
                       isSelected
-                        ? "border-green-500 bg-green-500 text-black"
-                        : "border-white/40 hover:border-white"
+                        ? "border-[#2f9e5b] bg-[#2f9e5b] text-black"
+                        : "border-[#2f9e5b]/40 hover:border-[#2f9e5b]"
                     }`}
                   >
                     {isSelected && "✓"}
                   </button>
-                  <span className={`text-sm font-medium ${isFull ? "text-white/30" : "text-white/80"}`}>
+                  <span className={`text-sm font-medium ${isFull ? "text-[#d9ffe6]/30" : "text-[#d9ffe6]/80"}`}>
                     {symbol}
                   </span>
                 </li>

@@ -30,12 +30,12 @@ type IntroRainProps = {
   className?: string;
 };
 
-const DEFAULT_CHARS =
+export const DEFAULT_CHARS =
   "abcdefghijklmnopqrstuvwxyz0123456789/.,';[]{}<>?!@#$%^&*()-=+";
 
 const DEFAULT_WORD_CHARS = "#@$%&8B0WMQNHRD";
 
-const MONO_FONT = "ui-monospace, Menlo, Consolas, monospace";
+export const MONO_FONT = "ui-monospace, Menlo, Consolas, monospace";
 
 /** Width of a character cell relative to its height, roughly a monospace glyph */
 const CELL_ASPECT = 0.65;
@@ -56,7 +56,7 @@ export default function IntroRain({
   wordColor,
   wordFont = 'system-ui, -apple-system, "Segoe UI", sans-serif',
   formDuration = 3500,
-  dripInterval = 350,
+  dripInterval = 120,
   className = "",
 }: IntroRainProps) {
   const slotRef = useRef<HTMLDivElement>(null);
@@ -373,13 +373,14 @@ export default function IntroRain({
       if (formed && !drainedAt && drops.every((d) => d > rows)) drainedAt = now;
       if (drainedAt && now - drainedAt > 1000) {
         ctx.clearRect(0, 0, w, h);
-        updateDrips(now, dt);
       } else {
         ctx.globalCompositeOperation = "destination-out";
         ctx.fillStyle = "rgba(0, 0, 0, 0.14)";
         ctx.fillRect(0, 0, w, h);
         ctx.globalCompositeOperation = "source-over";
       }
+      // Drips start as soon as the word has formed, while the intro rain drains
+      if (formed) updateDrips(now, dt);
 
       ctx.font = `${cell}px ${MONO_FONT}`;
       ctx.textBaseline = "top";

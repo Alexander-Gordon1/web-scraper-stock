@@ -24,7 +24,7 @@ export default function DateBox({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-xs text-[#E5EAF5]/60">
+        <label htmlFor={id} className="text-xs text-[#d9ffe6]/60">
           {label}
         </label>
         {value && (
@@ -32,7 +32,7 @@ export default function DateBox({
             type="button"
             onClick={() => onChange("")}
             aria-label={`Clear ${label.toLowerCase()}`}
-            className="text-xs text-[#9085e9] hover:underline"
+            className="text-xs text-[#2f9e5b] hover:underline"
           >
             Clear
           </button>
@@ -44,7 +44,7 @@ export default function DateBox({
         value={value}
         max={todayValue()}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-[#D0BDF4] bg-[#262826] px-3 py-2 text-sm text-[#E5EAF5] outline-none scheme-dark focus:border-[#9085e9] focus:ring-2 focus:ring-[#9085e9]/40"
+        className="w-full rounded-lg border border-[#2f9e5b]/30 bg-black/30 px-3 py-2 text-base sm:text-sm text-[#d9ffe6] outline-none scheme-dark focus:border-[#2f9e5b] focus:ring-2 focus:ring-[#2f9e5b]/40"
       />
     </div>
   );

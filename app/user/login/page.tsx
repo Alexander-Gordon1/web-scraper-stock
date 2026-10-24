@@ -4,6 +4,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import IntroRain from "@/app/user/components/IntroRain";
+import TerminalField, {
+  TERMINAL_BUTTON,
+  TERMINAL_ERROR,
+  TERMINAL_LINK,
+} from "@/app/user/components/TerminalField";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,70 +48,46 @@ export default function LoginPage() {
         className="flex w-full max-w-sm flex-col gap-4"
         onSubmit={handleLogin}
       >
-        {error && (
-          <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600 border border-red-200">
-            {error}
-          </p>
-        )}
+        {error && <p className={TERMINAL_ERROR}>{error}</p>}
 
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="username"
-            className="text-sm text-gray-300 font-medium"
-          >
-            Username
-          </label>
-          <input
-            id="username"
-            autoComplete="username"
-            required
-            placeholder="Enter Username here"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-background px-4 py-2.5 text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-          />
-        </div>
+        <TerminalField
+          id="username"
+          label="Username"
+          autoComplete="username"
+          required
+          placeholder="Enter Username here"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="password"
-            className="text-sm text-gray-300 font-medium"
-          >
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            placeholder="Enter Password here"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-background px-4 py-2.5 text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-          />
-        </div>
+        <TerminalField
+          id="password"
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          required
+          placeholder="Enter Password here"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-2 rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading} className={TERMINAL_BUTTON}>
           {loading ? "Logging in…" : "Log in"}
         </button>
 
         {/* Register / Forgot password links */}
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between">
           <button
             type="button"
             onClick={() => router.push("/user/reg-forgot?mode=forgot")}
-            className="text-blue-600 hover:underline"
+            className={TERMINAL_LINK}
           >
             Forgot password?
           </button>
           <button
             type="button"
             onClick={() => router.push("/user/reg-forgot?mode=register")}
-            className="text-blue-600 hover:underline"
+            className={TERMINAL_LINK}
           >
             Register
           </button>

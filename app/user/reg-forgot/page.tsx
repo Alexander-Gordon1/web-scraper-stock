@@ -4,6 +4,12 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import IntroRain from "@/app/user/components/IntroRain";
+import TerminalField, {
+  TERMINAL_BUTTON,
+  TERMINAL_ERROR,
+  TERMINAL_LINK,
+} from "@/app/user/components/TerminalField";
 
 function RegForgotContent() {
   const router = useRouter();
@@ -38,11 +44,8 @@ function RegForgotContent() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
-      {/* Logo + site name */}
-      <div className="flex flex-col items-center gap-3">
-        <span className="text-6xl">📈</span>
-        <h1 className="text-5xl font-extrabold tracking-tight">StockScraper</h1>
-      </div>
+      {/* Site name, formed by falling characters */}
+      <IntroRain word="Market Rewind" className="md:w-[min(60vw,120vh)]" />
 
       {/* Forgot password */}
       {isForgot && (
@@ -50,29 +53,21 @@ function RegForgotContent() {
           className="flex w-full max-w-sm flex-col gap-4"
           onSubmit={(e) => e.preventDefault()}
         >
-          <h2 className="text-xl font-semibold text-center">Reset your password</h2>
-          <p className="text-sm text-gray-500 text-center">
+          <h2 className="text-center font-mono text-xl font-semibold">Reset your password</h2>
+          <p className="text-center font-mono text-sm text-[#2f9e5b]">
             Enter your email and we&apos;ll send you a reset link.
           </p>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="reset-email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="reset-email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@example.com"
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+          <TerminalField
+            id="reset-email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="you@example.com"
+          />
 
-          <button
-            type="submit"
-            className="mt-2 rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 transition-colors"
-          >
+          <button type="submit" className={TERMINAL_BUTTON}>
             Send reset link
           </button>
         </form>
@@ -84,65 +79,44 @@ function RegForgotContent() {
           className="flex w-full max-w-sm flex-col gap-4"
           onSubmit={handleRegister}
         >
-          <h2 className="text-xl font-semibold text-center">Create an account</h2>
+          <h2 className="text-center font-mono text-xl font-semibold">Create an account</h2>
 
-          {error && (
-            <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600 border border-red-200">{error}</p>
-          )}
+          {error && <p className={TERMINAL_ERROR}>{error}</p>}
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="reg-email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="reg-email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+          <TerminalField
+            id="reg-email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="reg-password" className="text-sm font-medium">
-              Password
-            </label>
-            <input
-              id="reg-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+          <TerminalField
+            id="reg-password"
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            required
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="reg-confirm" className="text-sm font-medium">
-              Confirm password
-            </label>
-            <input
-              id="reg-confirm"
-              type="password"
-              autoComplete="new-password"
-              required
-              placeholder="••••••••"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+          <TerminalField
+            id="reg-confirm"
+            label="Confirm password"
+            type="password"
+            autoComplete="new-password"
+            required
+            placeholder="••••••••"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+          />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-60"
-          >
+          <button type="submit" disabled={loading} className={TERMINAL_BUTTON}>
             {loading ? "Registering…" : "Register"}
           </button>
         </form>
@@ -152,7 +126,7 @@ function RegForgotContent() {
       <button
         type="button"
         onClick={() => router.push("/user/login")}
-        className="text-sm text-blue-600 hover:underline"
+        className={TERMINAL_LINK}
       >
         ← Back to login
       </button>

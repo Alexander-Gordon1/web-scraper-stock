@@ -20,7 +20,7 @@ type Sale = {
 };
 
 const inputClass =
-  "w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 font-mono text-white focus:border-[#9085e9] focus:outline-none";
+  "w-full rounded-md border border-[#2f9e5b]/30 bg-black/20 px-3 py-2 font-mono text-[#d9ffe6] caret-[#2f9e5b] focus:border-[#2f9e5b] focus:shadow-[0_0_14px_rgba(47,158,91,0.35)] focus:outline-none";
 
 // pop-up for selling whole or fractional shares of a stock the user owns
 export default function SellStockDialog({ symbol, sharesOwned, price, onClose, onSold }: SellStockDialogProps) {
@@ -100,19 +100,19 @@ export default function SellStockDialog({ symbol, sharesOwned, price, onClose, o
       onClose={onClose}
       onClick={(e) => e.target === dialogRef.current && dialogRef.current.close()} // click on the backdrop
       aria-labelledby="sell-stock-title"
-      className="m-auto w-[min(400px,calc(100vw-32px))] rounded-lg border border-white/10 bg-[#2f3130] p-0 text-[#E5EAF5] backdrop:bg-black/60"
+      className="m-auto w-[min(400px,calc(100vw-32px))] rounded-md border border-[#2f9e5b]/50 bg-[#141714] p-0 text-[#d9ffe6] shadow-[0_0_30px_rgba(47,158,91,0.25)] backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
       {/* padding lives here so clicks on it aren't mistaken for backdrop clicks */}
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
-          <h2 id="sell-stock-title" className="text-[22px] font-bold tracking-wide">
+          <h2 id="sell-stock-title" className="font-mono text-[22px] font-bold tracking-widest">
             Sell {symbol}
           </h2>
           <button
             type="button"
             onClick={() => dialogRef.current?.close()}
             aria-label="Close"
-            className="rounded-md px-2 text-xl text-[#E5EAF5]/70 transition-colors hover:bg-white/10 hover:text-white"
+            className="rounded-md px-2 text-xl text-[#d9ffe6]/70 transition-colors hover:bg-[#2f9e5b]/15 hover:text-[#d9ffe6]"
           >
             ×
           </button>
@@ -121,20 +121,20 @@ export default function SellStockDialog({ symbol, sharesOwned, price, onClose, o
         {sale ? (
           // done: show what was sold
           <div className="mt-4 flex flex-col gap-3">
-            <p className="text-green-500">
+            <p className="text-[#2f9e5b]">
               Sold {formatShares(sale.quantity)} {symbol} share{sale.quantity === 1 ? "" : "s"} at{" "}
               {money(sale.pricePerShare)} for {money(sale.total)}.
             </p>
             <p>
-              New balance: <span className="font-mono text-white">{money(sale.balance)}</span>
+              New balance: <span className="font-mono text-[#d9ffe6]">{money(sale.balance)}</span>
             </p>
             <p>
-              {symbol} shares left: <span className="font-mono text-white">{formatShares(sale.sharesLeft)}</span>
+              {symbol} shares left: <span className="font-mono text-[#d9ffe6]">{formatShares(sale.sharesLeft)}</span>
             </p>
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
-              className="self-end rounded-md bg-[#9085e9] px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#7b6fe0]"
+              className="self-end rounded-md border border-[#2f9e5b] bg-[#2f9e5b]/15 px-4 py-1.5 text-sm font-mono font-bold uppercase tracking-widest text-[#d9ffe6] transition hover:bg-[#2f9e5b] hover:text-black hover:shadow-[0_0_14px_rgba(47,158,91,0.45)]"
             >
               Done
             </button>
@@ -144,14 +144,14 @@ export default function SellStockDialog({ symbol, sharesOwned, price, onClose, o
             <dl className="flex flex-col gap-2">
               {rows.map((row) => (
                 <div key={row.label} className="flex justify-between gap-4">
-                  <dt className="text-[#E5EAF5]/60">{row.label}</dt>
-                  <dd className="font-mono text-white">{row.value}</dd>
+                  <dt className="text-[#d9ffe6]/60">{row.label}</dt>
+                  <dd className="font-mono text-[#d9ffe6]">{row.value}</dd>
                 </div>
               ))}
             </dl>
 
             <div className="flex items-end gap-2">
-              <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm text-[#E5EAF5]/80">
+              <label className="flex min-w-0 flex-1 flex-col gap-1 font-mono text-xs uppercase tracking-[0.2em] text-[#2f9e5b]">
                 Shares
                 <input
                   type="text"
@@ -163,7 +163,7 @@ export default function SellStockDialog({ symbol, sharesOwned, price, onClose, o
                   className={inputClass}
                 />
               </label>
-              <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm text-[#E5EAF5]/80">
+              <label className="flex min-w-0 flex-1 flex-col gap-1 font-mono text-xs uppercase tracking-[0.2em] text-[#2f9e5b]">
                 Amount ($)
                 <input
                   type="text"
@@ -177,20 +177,20 @@ export default function SellStockDialog({ symbol, sharesOwned, price, onClose, o
               <button
                 type="button"
                 onClick={fillMax}
-                className="rounded-md border border-white/10 px-3 py-2 text-sm transition-colors hover:bg-white/10"
+                className="rounded-md border border-[#2f9e5b]/30 px-3 py-2 text-sm transition-colors hover:bg-[#2f9e5b]/15"
               >
                 Max
               </button>
             </div>
 
-            <div className="flex justify-between gap-4 border-t border-white/10 pt-3">
-              <span className="text-[#E5EAF5]/60">You receive</span>
-              <span className="font-mono text-white">{validQuantity ? money(proceeds) : "—"}</span>
+            <div className="flex justify-between gap-4 border-t border-[#2f9e5b]/30 pt-3">
+              <span className="text-[#d9ffe6]/60">You receive</span>
+              <span className="font-mono text-[#d9ffe6]">{validQuantity ? money(proceeds) : "—"}</span>
             </div>
             {validQuantity && (
               <div className="-mt-3 flex justify-between gap-4 text-sm">
-                <span className="text-[#E5EAF5]/60">Shares left</span>
-                <span className="font-mono text-[#E5EAF5]/80">{formatShares(maxShares - quantity)}</span>
+                <span className="text-[#d9ffe6]/60">Shares left</span>
+                <span className="font-mono text-[#d9ffe6]/80">{formatShares(maxShares - quantity)}</span>
               </div>
             )}
             {shares !== "" && quantityError && <p className="-mt-2 text-sm text-red-400">{quantityError}</p>}
@@ -200,7 +200,7 @@ export default function SellStockDialog({ symbol, sharesOwned, price, onClose, o
             <button
               type="submit"
               disabled={!validQuantity || selling}
-              className="rounded-md bg-[#9085e9] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#7b6fe0] disabled:opacity-50 disabled:hover:bg-[#9085e9]"
+              className="rounded-md border border-[#2f9e5b] bg-[#2f9e5b]/15 px-4 py-2 font-mono font-bold uppercase tracking-widest text-[#d9ffe6] transition hover:bg-[#2f9e5b] hover:text-black hover:shadow-[0_0_14px_rgba(47,158,91,0.45)] disabled:opacity-50 disabled:hover:bg-[#2f9e5b]/15 disabled:hover:text-[#d9ffe6] disabled:hover:shadow-none"
             >
               {selling ? "Selling…" : validQuantity ? `Sell for ${money(proceeds)}` : "Sell"}
             </button>

@@ -15,10 +15,10 @@ const TABS = [
 
 export default function AdminTabNav({ activeTab, onTabChange }: TabNavProperties) {
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-[#262826] border-b border-gray-200">
-      <div> </div>
-      {/* Center: Tab buttons */}
-      <div className="flex width-100 gap-1 bg-[#262826] p-1 rounded-lg">
+    <nav className="flex items-center justify-between px-0 py-3 bg-[#262826] border-b border-gray-200 sm:px-6">
+      <div className="hidden sm:block"> </div>
+      {/* Center: Tab buttons (a 2x2 grid on phones so they fit) */}
+      <div className="grid w-full grid-cols-2 gap-1 bg-[#262826] p-1 rounded-lg sm:flex sm:w-auto">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -33,7 +33,7 @@ export default function AdminTabNav({ activeTab, onTabChange }: TabNavProperties
           </button>
         ))}
       </div>
-      <div> </div>
+      <div className="hidden sm:block"> </div>
     </nav>
   );
 }

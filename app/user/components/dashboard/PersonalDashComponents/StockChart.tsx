@@ -17,9 +17,10 @@ const HEIGHT = 240;
 const MARGIN = { top: 12, right: 56, bottom: 28, left: 8 };
 const MIN_LABEL_GAP = 64; // px between x axis labels
 
-// chart colours (line colour validated against the #262826 card surface)
-const LINE_COLOR = "#9085e9";
-const SURFACE = "#262826";
+// chart colours: the rain green from the login page, on the card's dark surface
+// (bg-black/30 over the #262826 page comes out at about #1b1c1b)
+const LINE_COLOR = "#2f9e5b";
+const SURFACE = "#1b1c1b";
 
 // wording for the period shown, and for the change in the header
 const PERIOD_LABEL: Record<TimeRange, string> = {
@@ -208,18 +209,18 @@ export default function StockChart({
   const hovered = hoverIndex !== null ? points[hoverIndex] : null;
 
   return (
-    <div className="@container p-6 rounded-lg shadow-sm bg-[#262826] border border-[#D0BDF4] text-[#E5EAF5]">
+    <div className="@container p-4 sm:p-6 rounded-md shadow-sm bg-black/30 border border-[#2f9e5b]/30 text-[#d9ffe6]">
       {/* header: stacked when the card is narrow (e.g. 3 side by side), one row when wide */}
       <div className="flex flex-col gap-2 mb-4 @lg:flex-row @lg:items-end @lg:justify-between @lg:gap-4">
         <div>
-          <p className="text-lg font-semibold">{symbol}</p>
-          <p className="text-xs text-[#E5EAF5]/60">
+          <p className="font-mono text-lg font-bold tracking-widest">{symbol}</p>
+          <p className="text-xs text-[#d9ffe6]/60">
             {periodLabel} · price in USD
           </p>
           {prevClose !== null && (
-            <p className="mt-1 flex items-center gap-2 text-xs text-[#E5EAF5]/60">
+            <p className="mt-1 flex items-center gap-2 text-xs text-[#d9ffe6]/60">
               <svg width="16" height="2" aria-hidden="true">
-                <line x1="0" x2="16" y1="1" y2="1" stroke="rgba(229,234,245,0.5)" strokeDasharray="4 4" />
+                <line x1="0" x2="16" y1="1" y2="1" stroke="rgba(217,255,230,0.5)" strokeDasharray="4 4" />
               </svg>
               Prev close {formatPrice(prevClose)}
             </p>
@@ -229,10 +230,10 @@ export default function StockChart({
           <div className="@lg:text-right">
             <p className="text-2xl font-semibold font-mono">{formatPrice(latest.price)}</p>
             {change !== null && changePct !== null && (
-              <p className={`text-sm font-mono ${isUp ? "text-green-500" : "text-red-500"}`}>
+              <p className={`text-sm font-mono ${isUp ? "text-[#2f9e5b]" : "text-red-400"}`}>
                 {isUp ? "▲" : "▼"} {isUp ? "+" : ""}
                 {change.toFixed(2)} ({isUp ? "+" : ""}
-                {changePct.toFixed(2)}%) <span className="font-sans text-[#E5EAF5]/60">{changeLabel}</span>
+                {changePct.toFixed(2)}%) <span className="font-sans text-[#d9ffe6]/60">{changeLabel}</span>
               </p>
             )}
           </div>
@@ -241,9 +242,9 @@ export default function StockChart({
 
       {/* chart */}
       <div ref={containerRef} className="relative w-full" style={{ height: HEIGHT }}>
-        {error && !data && <p className="text-sm text-[#E5EAF5]/60">{error}</p>}
-        {!error && !data && <p className="text-sm text-[#E5EAF5]/60">Loading…</p>}
-        {data && points.length === 0 && <p className="text-sm text-[#E5EAF5]/60">No price data for this period.</p>}
+        {error && !data && <p className="text-sm text-[#d9ffe6]/60">{error}</p>}
+        {!error && !data && <p className="text-sm text-[#d9ffe6]/60">Loading…</p>}
+        {data && points.length === 0 && <p className="text-sm text-[#d9ffe6]/60">No price data for this period.</p>}
 
         {width > 0 && points.length > 0 && (
           <svg
@@ -255,8 +256,8 @@ export default function StockChart({
             {/* gridlines + y axis labels */}
             {yTicks.map((v) => (
               <g key={v}>
-                <line x1={MARGIN.left} x2={MARGIN.left + innerW} y1={y(v)} y2={y(v)} stroke="rgba(229,234,245,0.08)" />
-                <text x={MARGIN.left + innerW + 8} y={y(v)} dy="0.32em" fontSize={11} fill="rgba(229,234,245,0.6)" className="font-mono">
+                <line x1={MARGIN.left} x2={MARGIN.left + innerW} y1={y(v)} y2={y(v)} stroke="rgba(217,255,230,0.08)" />
+                <text x={MARGIN.left + innerW + 8} y={y(v)} dy="0.32em" fontSize={11} fill="rgba(217,255,230,0.6)" className="font-mono">
                   {v.toFixed(yTickDecimals)}
                 </text>
               </g>
@@ -264,7 +265,7 @@ export default function StockChart({
 
             {/* x axis labels */}
             {xTicks.map((i) => (
-              <text key={i} x={x(i)} y={HEIGHT - 8} textAnchor="middle" fontSize={11} fill="rgba(229,234,245,0.6)">
+              <text key={i} x={x(i)} y={HEIGHT - 8} textAnchor="middle" fontSize={11} fill="rgba(217,255,230,0.6)">
                 {formatTick(points[i].time)}
               </text>
             ))}
@@ -276,7 +277,7 @@ export default function StockChart({
                 x2={MARGIN.left + innerW}
                 y1={y(prevClose)}
                 y2={y(prevClose)}
-                stroke="rgba(229,234,245,0.35)"
+                stroke="rgba(217,255,230,0.35)"
                 strokeDasharray="4 4"
               />
             )}
@@ -300,7 +301,7 @@ export default function StockChart({
             {/* hover crosshair + marker */}
             {hovered && hoverIndex !== null && (
               <g pointerEvents="none">
-                <line x1={x(hoverIndex)} x2={x(hoverIndex)} y1={MARGIN.top} y2={MARGIN.top + innerH} stroke="rgba(229,234,245,0.35)" />
+                <line x1={x(hoverIndex)} x2={x(hoverIndex)} y1={MARGIN.top} y2={MARGIN.top + innerH} stroke="rgba(217,255,230,0.35)" />
                 <circle cx={x(hoverIndex)} cy={y(hovered.price)} r={5} fill={LINE_COLOR} stroke={SURFACE} strokeWidth={2} />
               </g>
             )}
@@ -323,7 +324,7 @@ export default function StockChart({
         {/* tooltip */}
         {hovered && hoverIndex !== null && (
           <div
-            className="pointer-events-none absolute z-10 rounded-md border border-white/10 bg-[#1a1a1a] px-3 py-2 text-xs shadow-lg"
+            className="pointer-events-none absolute z-10 rounded-md border border-[#2f9e5b]/30 bg-black/85 backdrop-blur-sm px-3 py-2 text-xs shadow-lg"
             style={{
               top: MARGIN.top,
               // sit beside the crosshair, flipping to the left side near the right edge
@@ -331,11 +332,11 @@ export default function StockChart({
               width: 120,
             }}
           >
-            <p className="text-[#E5EAF5]/60">
+            <p className="text-[#d9ffe6]/60">
               {isIntraday ? formatTime(hovered.time) : `${formatDay(hovered.time)}, ${formatTime(hovered.time)}`}
             </p>
-            <p className="font-mono text-sm font-semibold text-[#E5EAF5]">{formatPrice(hovered.price)}</p>
-            {onPointClick && <p className="mt-1 text-[#9085e9]">Click for news</p>}
+            <p className="font-mono text-sm font-semibold text-[#d9ffe6]">{formatPrice(hovered.price)}</p>
+            {onPointClick && <p className="mt-1 text-[#2f9e5b]">Click for news</p>}
           </div>
         )}
       </div>
@@ -344,7 +345,7 @@ export default function StockChart({
       {(onRangeChange || onStartChange) && (
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {onRangeChange && (
-            <div className="inline-flex gap-1 rounded-lg border border-white/10 p-1" role="group" aria-label="Time period">
+            <div className="inline-flex gap-1 rounded-lg border border-[#2f9e5b]/30 p-1" role="group" aria-label="Time period">
               {(Object.keys(TIME_RANGES) as TimeRange[]).map((key) => (
                 <button
                   key={key}
@@ -355,7 +356,7 @@ export default function StockChart({
                   }}
                   aria-pressed={range === key}
                   className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
-                    range === key ? "bg-[#9085e9] text-[#1a1a1a]" : "text-[#E5EAF5]/60 hover:bg-white/10 hover:text-[#E5EAF5]"
+                    range === key ? "bg-[#2f9e5b] text-black" : "text-[#d9ffe6]/60 hover:bg-[#2f9e5b]/15 hover:text-[#d9ffe6]"
                   }`}
                 >
                   {TIME_RANGES[key].label}

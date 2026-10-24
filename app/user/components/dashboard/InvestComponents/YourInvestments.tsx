@@ -37,11 +37,11 @@ type Holding = {
 const NO_SHARES = 1e-9;
 
 const percent = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
-const gainClass = (n: number) => (n >= 0 ? "text-green-500" : "text-red-500");
+const gainClass = (n: number) => (n >= 0 ? "text-[#2f9e5b]" : "text-red-400");
 
-const thClass = "px-3 py-2 font-medium text-[#E5EAF5]/60";
+const thClass = "px-3 py-2 font-medium text-[#d9ffe6]/60";
 const tdClass = "px-3 py-2.5 font-mono";
-const numClass = `${tdClass} text-[#E5EAF5]`; // plain number cells
+const numClass = `${tdClass} text-[#d9ffe6]`; // plain number cells
 
 // the logged-in user's stocks: totals, one row per stock held (with a sell button), and every buy and sell
 export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
@@ -139,12 +139,12 @@ export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
 
   return (
     <section className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold">Your investments</h2>
+      <h2 className="font-mono text-lg font-bold tracking-wider">Your investments</h2>
 
-      {loading && <p className="text-[#E5EAF5]/60">Loading your investments…</p>}
+      {loading && <p className="text-[#d9ffe6]/60">Loading your investments…</p>}
       {error && <p className="text-red-400">{error}</p>}
       {!loading && !error && trades.length === 0 && (
-        <p className="text-[#E5EAF5]/60">You haven&apos;t bought any stocks yet. Press Buy on a stock to get started.</p>
+        <p className="text-[#d9ffe6]/60">You haven&apos;t bought any stocks yet. Press Buy on a stock to get started.</p>
       )}
 
       {trades.length > 0 && (
@@ -153,21 +153,21 @@ export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
           <dl className="flex flex-wrap gap-x-10 gap-y-3">
             {summary.map((item) => (
               <div key={item.label}>
-                <dt className="text-sm text-[#E5EAF5]/60">{item.label}</dt>
-                <dd className={`font-mono text-[22px] ${item.className ?? "text-white"}`}>{item.value}</dd>
+                <dt className="text-sm text-[#d9ffe6]/60">{item.label}</dt>
+                <dd className={`font-mono text-[22px] ${item.className ?? "text-[#d9ffe6]"}`}>{item.value}</dd>
               </div>
             ))}
           </dl>
 
           {/* one row per stock still held */}
           <div>
-            <h3 className="mb-2 font-semibold">Holdings</h3>
+            <h3 className="mb-2 font-mono text-sm font-bold uppercase tracking-[0.2em] text-[#2f9e5b]">Holdings</h3>
             {holdings.length === 0 ? (
-              <p className="text-[#E5EAF5]/60">You don&apos;t own any stocks right now.</p>
+              <p className="text-[#d9ffe6]/60">You don&apos;t own any stocks right now.</p>
             ) : (
-              <div className="overflow-x-auto rounded-lg border border-white/10">
+              <div className="overflow-x-auto rounded-md border border-[#2f9e5b]/30">
                 <table className="w-full text-right text-sm">
-                  <thead className="border-b border-white/10 bg-white/5">
+                  <thead className="border-b border-[#2f9e5b]/30 bg-[#2f9e5b]/10">
                     <tr>
                       <th className={`${thClass} text-left`}>Stock</th>
                       <th className={thClass}>Shares</th>
@@ -180,16 +180,16 @@ export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-[#2f9e5b]/15">
                     {holdings.map((h) => {
                       const gain = valueOf(h) - h.cost;
                       return (
-                        <tr key={h.symbol} className="hover:bg-white/5">
-                          <td className="px-3 py-2.5 text-left font-semibold text-white">{h.symbol}</td>
+                        <tr key={h.symbol} className="hover:bg-[#2f9e5b]/10">
+                          <td className="px-3 py-2.5 text-left font-semibold text-[#d9ffe6]">{h.symbol}</td>
                           <td className={numClass}>{formatShares(h.shares)}</td>
                           <td className={numClass}>{money(h.cost / h.shares)}</td>
                           <td className={numClass}>{h.price === null ? "—" : money(h.price)}</td>
-                          <td className={`${tdClass} text-white`}>{money(valueOf(h))}</td>
+                          <td className={`${tdClass} text-[#d9ffe6]`}>{money(valueOf(h))}</td>
                           <td className={`${tdClass} ${gainClass(gain)}`}>
                             {money(gain)} ({percent(h.cost ? (gain / h.cost) * 100 : 0)})
                           </td>
@@ -199,7 +199,7 @@ export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
                               onClick={() => setSelling(h)}
                               disabled={h.price === null}
                               title={h.price === null ? "No current price for this stock" : undefined}
-                              className="rounded-md border border-[#9085e9] px-3 py-1 text-sm font-semibold text-[#E5EAF5] transition-colors hover:bg-[#9085e9] hover:text-white disabled:opacity-40 disabled:hover:bg-transparent"
+                              className="rounded-md border border-[#2f9e5b]/60 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-[#d9ffe6] transition hover:border-[#2f9e5b] hover:bg-[#2f9e5b] hover:text-black hover:shadow-[0_0_14px_rgba(47,158,91,0.45)] disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#d9ffe6] disabled:hover:shadow-none"
                             >
                               Sell
                             </button>
@@ -215,10 +215,10 @@ export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
 
           {/* every buy and sell */}
           <div>
-            <h3 className="mb-2 font-semibold">History</h3>
-            <div className="max-h-80 overflow-auto overscroll-contain rounded-lg border border-white/10">
+            <h3 className="mb-2 font-mono text-sm font-bold uppercase tracking-[0.2em] text-[#2f9e5b]">History</h3>
+            <div className="max-h-80 overflow-auto overscroll-contain rounded-md border border-[#2f9e5b]/30">
               <table className="w-full text-right text-sm">
-                <thead className="sticky top-0 border-b border-white/10 bg-[#2f3130]">
+                <thead className="sticky top-0 border-b border-[#2f9e5b]/30 bg-[#141714]">
                   <tr>
                     <th className={`${thClass} text-left`}>Date</th>
                     <th className={`${thClass} text-left`}>Type</th>
@@ -228,18 +228,18 @@ export default function YourInvestments({ quotes }: { quotes: StockQuote[] }) {
                     <th className={thClass}>Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-[#2f9e5b]/15">
                   {trades.map((t) => (
-                    <tr key={`${t.type}-${t.id}`} className="hover:bg-white/5">
-                      <td className="px-3 py-2.5 text-left text-[#E5EAF5]/80">{new Date(t.at).toLocaleString()}</td>
+                    <tr key={`${t.type}-${t.id}`} className="hover:bg-[#2f9e5b]/10">
+                      <td className="px-3 py-2.5 text-left text-[#d9ffe6]/80">{new Date(t.at).toLocaleString()}</td>
                       <td
                         className={`px-3 py-2.5 text-left font-semibold ${
-                          t.type === "Buy" ? "text-[#9085e9]" : "text-amber-400"
+                          t.type === "Buy" ? "text-[#2f9e5b]" : "text-amber-400"
                         }`}
                       >
                         {t.type}
                       </td>
-                      <td className="px-3 py-2.5 text-left font-semibold text-white">{t.symbol}</td>
+                      <td className="px-3 py-2.5 text-left font-semibold text-[#d9ffe6]">{t.symbol}</td>
                       <td className={numClass}>{formatShares(t.quantity)}</td>
                       <td className={numClass}>{money(t.price)}</td>
                       <td className={numClass}>{money(t.quantity * t.price)}</td>
