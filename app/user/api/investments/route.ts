@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { brainApi, userPath } from "@/app/lib/brainApi";
+import { brainApi, userPath } from "@/app/user/lib/brainApi";
 
 // returns every stock purchase and sale the logged-in user has made, newest first
 export async function GET() {

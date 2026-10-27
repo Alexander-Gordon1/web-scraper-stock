@@ -1,14 +1,14 @@
-// app/login/page.tsx
+// app/user/login/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import IntroRain from "@/app/user/components/IntroRain";
+import IntroRain from "@/app/user/components/shared/IntroRain";
 import TerminalField, {
   TERMINAL_BUTTON,
   TERMINAL_ERROR,
   TERMINAL_LINK,
-} from "@/app/user/components/TerminalField";
+} from "@/app/user/components/shared/TerminalField";
 
 export default function LoginPage() {
   const router = useRouter();

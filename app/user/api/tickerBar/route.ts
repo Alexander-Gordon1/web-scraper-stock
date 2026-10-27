@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { brainApi, userPath } from "@/app/lib/brainApi";
+import { brainApi, userPath } from "@/app/user/lib/brainApi";
 
 // returns the user's tickers (or the defaults when logged out) + the latest quote for each one
 export async function GET() {

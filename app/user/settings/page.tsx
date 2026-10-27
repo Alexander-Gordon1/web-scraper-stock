@@ -1,8 +1,8 @@
-// app/settings/page.tsx
+// app/user/settings/page.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
-import BackButton from "@/app/user/components/BackButton";
+import BackButton from "@/app/user/components/shared/BackButton";
 import ThemeToggle from "@/app/user/components/settings/ThemeToggle";
 
 export default function SettingsPage() {

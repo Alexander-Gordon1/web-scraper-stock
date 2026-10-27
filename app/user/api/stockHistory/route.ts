@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { brainApi } from "@/app/lib/brainApi";
+import { brainApi } from "@/app/user/lib/brainApi";
 
 // returns prices for a symbol over a time range, oldest first.
 // without `start`, shows the most recent range (e.g. the past month).

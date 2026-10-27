@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { brainApi } from "@/app/lib/brainApi";
+import { brainApi } from "@/app/user/lib/brainApi";
 
 // returns the news published between `from` and `to` (at most 2 days apart), split into
 // articles about the symbol and general market news.

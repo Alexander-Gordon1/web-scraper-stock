@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { brainApi, userPath } from "@/app/lib/brainApi";
+import { brainApi, userPath } from "@/app/user/lib/brainApi";
 
 // sells whole or fractional shares of a stock at its latest price (the Pi checks the order and the shares owned)
 export async function POST(request: Request) {

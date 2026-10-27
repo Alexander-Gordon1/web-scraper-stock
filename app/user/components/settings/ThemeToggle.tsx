@@ -1,7 +1,7 @@
 // components/settings/ThemeToggle.tsx
 "use client";
 
-import { useTheme } from "@/app/user/components/ThemeProvider";
+import { useTheme } from "@/app/user/components/shared/ThemeProvider";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();

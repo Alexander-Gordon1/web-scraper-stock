@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { brainApi, userPath } from "@/app/lib/brainApi";
+import { brainApi, userPath } from "@/app/user/lib/brainApi";
 
 // returns the logged-in user's bank account (null if they don't have one yet)
 export async function GET() {

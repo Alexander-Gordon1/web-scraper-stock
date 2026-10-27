@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { brainApi } from "@/app/lib/brainApi";
+import { brainApi } from "@/app/user/lib/brainApi";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);

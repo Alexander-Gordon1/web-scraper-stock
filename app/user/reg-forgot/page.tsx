@@ -1,15 +1,15 @@
-// app/reg-forgot/page.tsx
+// app/user/reg-forgot/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import IntroRain from "@/app/user/components/IntroRain";
+import IntroRain from "@/app/user/components/shared/IntroRain";
 import TerminalField, {
   TERMINAL_BUTTON,
   TERMINAL_ERROR,
   TERMINAL_LINK,
-} from "@/app/user/components/TerminalField";
+} from "@/app/user/components/shared/TerminalField";
 
 function RegForgotContent() {
   const router = useRouter();

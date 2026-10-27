@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { brainApi } from "@/app/lib/brainApi";
+import { brainApi } from "@/app/user/lib/brainApi";
 
 // returns the newest quote for each ticker in { tickers: [...] }
 export async function POST(request: Request) {
