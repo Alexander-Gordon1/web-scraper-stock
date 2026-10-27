@@ -6,13 +6,13 @@ import TabNav from "@/app/user/components/dashboard/TabNav";
 import PersonalDashboardTab from "@/app/user/components/dashboard/PersonalDashTab";
 import PersonalFeedTab from "@/app/user/components/dashboard/PersonalFeedTab";
 import ExploreFeedTab from "@/app/user/components/dashboard/ExploreFeedTab";
-import AdminTab from "@/app/user/components/dashboard/AdminTab";
+import Pi5Tab from "@/app/user/components/dashboard/Pi5Tab";
 
 const TAB_COMPONENTS: Record<string, React.ComponentType> = {
   dashboard: PersonalDashboardTab,
   "personal-feed": PersonalFeedTab,
   "explore-feed": ExploreFeedTab,
-  admin: AdminTab,
+  pi5: Pi5Tab,
 };
 
 export default function DashboardPage() {

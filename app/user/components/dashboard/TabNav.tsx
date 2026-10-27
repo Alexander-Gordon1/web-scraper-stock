@@ -13,7 +13,7 @@ const TABS = [
   { key: "dashboard", label: "Dashboard" },
   { key: "personal-feed", label: "Personal Feed", short: "Feed" }, // short = label on phones
   { key: "explore-feed", label: "Invest" },
-  { key: "admin", label: "Admin" },
+  { key: "pi5", label: "Pi-5" },
 ];
 
 export default function TabNav({ activeTab, onTabChange }: TabNavProperties) {
@@ -47,7 +47,10 @@ export default function TabNav({ activeTab, onTabChange }: TabNavProperties) {
           &gt;
         </span>
         <span className="text-primary">Market Rewind</span>
-        <span aria-hidden="true" className="h-5 w-2.5 animate-pulse bg-[#2f9e5b]" />
+        <span
+          aria-hidden="true"
+          className="h-5 w-2.5 animate-pulse bg-[#2f9e5b]"
+        />
       </div>
 
       {/* Center: Tab buttons */}
